@@ -7,7 +7,7 @@ import (
 
 	"github.com/rs/zerolog/log"
 
-	"github.com/Rippling/interneers-lab-2026/pkg/helloworld/controller"
+	"github.com/shiven-lohia/interneers-lab/pkg/helloworld/controller"
 )
 
 type HelloHandler struct {

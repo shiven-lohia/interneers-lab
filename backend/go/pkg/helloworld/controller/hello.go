@@ -3,7 +3,7 @@ package controller
 import (
 	"context"
 
-	"github.com/Rippling/interneers-lab-2026/pkg/helloworld/entity"
+	"github.com/shiven-lohia/interneers-lab/pkg/helloworld/entity"
 )
 
 type HelloController interface {

@@ -5,7 +5,7 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/Rippling/interneers-lab-2026/pkg/helloworld/entity"
+	"github.com/shiven-lohia/interneers-lab/pkg/helloworld/entity"
 )
 
 func MapHTTPRequestToHelloRequest(r *http.Request) (*entity.HelloRequest, error) {

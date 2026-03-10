@@ -1,4 +1,4 @@
-module github.com/Rippling/interneers-lab-2026
+module github.com/shiven-lohia/interneers-lab
 
 go 1.23.6
 

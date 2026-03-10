@@ -3,7 +3,7 @@ package handler
 import (
 	"net/http"
 
-	"github.com/Rippling/interneers-lab-2026/pkg/helloworld/controller"
+	"github.com/shiven-lohia/interneers-lab/pkg/helloworld/controller"
 )
 
 func RegisterHelloHandler(mux *http.ServeMux) {
