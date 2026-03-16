@@ -1,127 +1,249 @@
-# Interneers Lab
+# Interneers Lab Inventory API
 
-Welcome to the **Interneers Lab** repository! This serves as a minimal starter kit for learning and experimenting with:
-- **Django** (Python)
-- **Golang** (Go)
-- **React**  (with TypeScript)
-- **MongoDB** (via Docker Compose)
-- Development environment in **VSCode** (recommended)
+This document covers the current inventory system API implemented in `backend/go`.
 
-**Important:** Use the **same email** you shared during onboarding when configuring Git and related tools. That ensures consistency across all internal systems.
+## Scope
 
-### Project structure
+The inventory system is the `products` module in the Go backend. It exposes a small CRUD API over HTTP and is currently wired into the application entrypoint at `backend/go/cmd/app/main.go`.
 
+Current implementation notes:
+
+- The API is served by Go's standard `net/http` package.
+- Product routes are mounted under `/products`.
+- Data is stored in an in-memory map, not in MongoDB.
+- The process currently listens on port `8080` in code.
+
+## Inventory Domain Model
+
+Each inventory item is represented as a product with the following JSON shape:
+
+```json
+{
+  "id": "sku-1001",
+  "name": "Wireless Mouse",
+  "description": "Ergonomic mouse with USB receiver",
+  "category": "Accessories",
+  "price": 24.99,
+  "brand": "LogiTech",
+  "quantity": 12
+}
 ```
-backend/
-  go/          # Golang backend (see backend/go/README.md)
-  python/      # Django (Python) backend (see backend/python/README.md)
-frontend/      # React + TypeScript (see frontend/README.md)
+
+### Fields
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `id` | `string` | Yes in practice | Must be supplied by the client. The API does not generate IDs. |
+| `name` | `string` | Yes | Must not be empty. |
+| `description` | `string` | No | Free-form text. |
+| `category` | `string` | No | Free-form text. |
+| `price` | `number` | Yes | Must be greater than `0`. |
+| `brand` | `string` | No | Free-form text. |
+| `quantity` | `number` | Yes | Must be `0` or greater. |
+
+## Validation Rules
+
+The controller currently enforces these business rules on create and update:
+
+- `name` is required.
+- `price` must be greater than `0`.
+- `quantity` cannot be negative.
+
+Validation failures return plain-text error messages with `400 Bad Request` for create requests and either `400 Bad Request` or `404 Not Found` depending on the handler path.
+
+## Base URL
+
+Use this base URL when running the Go server locally:
+
+```text
+http://localhost:8080
 ```
 
----
+## Endpoints
 
-## Table of Contents
+### 1. List all inventory items
 
-1. [Getting Started with Git & Forking](#getting-started-with-git-and-forking)
-2. [Prerequisites & where to find them](#prerequisites--where-to-find-them)
-3. [Setting up & running](#setting-up--running)
-4. [Development Workflow](#development-workflow)
-   - [Pushing Your First Change](#pushing-your-first-change)
-5. [Making your first change](#making-your-first-change)
-6. [Running Tests](#running-tests)
-7. [Frontend Setup](#frontend-setup)
-8. [Further Reading](#further-reading)
+**Request**
 
----
+```http
+GET /products
+```
 
-## Getting Started with Git and Forking
+**Success response**
 
-### 1. Setting up Git and the Repo
+- Status: `200 OK`
+- Body: JSON array of products
 
-1. **Install Git** (if not already):
-   - **macOS**: [Homebrew](https://brew.sh/) users can run `brew install git`.
-   - **Windows**: Use [Git for Windows](https://gitforwindows.org/).
-   - **Linux**: Install via your distro's package manager, e.g., `sudo apt-get install git` (Ubuntu/Debian).
+**Example**
 
-2. **Configure Git** with your name and email:
-   ```bash
-   git config --global user.name "Your Name"
-   git config --global user.email "your.email@example.com" # Use the same email you shared during onboarding
-   ```
+```bash
+curl http://localhost:8080/products
+```
 
-3. **What is Forking?**
+### 2. Get one inventory item by ID
 
-   Forking a repository on GitHub creates your own copy under your GitHub account, where you can make changes independently without affecting the original repo. Later, you can make pull requests to merge changes back if needed.
+**Request**
 
-4. Fork the Rippling/interneers-lab repository (ensure you're in the correct org or your personal GitHub account, as directed).
-5. **Clone** your forked repo:
-   ```bash
-   git clone git@github.com:<YourUsername>/interneers-lab.git
-   cd interneers-lab
-   ```
+```http
+GET /products/{id}
+```
 
-## Prerequisites & where to find them
+**Success response**
 
-Prerequisites (Python, Go, Node, Docker, etc.) and how to verify your setup are documented in each part of the repo:
+- Status: `200 OK`
+- Body: JSON product object
 
-- **[backend/python/README.md](backend/python/README.md)** — Python/Django, virtualenv, MongoDB
-- **[backend/go/README.md](backend/go/README.md)** — Go, MongoDB
-- **[frontend/README.md](frontend/README.md)** — Node, Yarn, React
+**Not found**
 
-Use the README for the part you're working on.
+- Status: `404 Not Found`
+- Body: `Product not found`
 
----
+**Example**
 
-## Setting up & running
+```bash
+curl http://localhost:8080/products/sku-1001
+```
 
-Setup and run instructions live in the domain READMEs:
+### 3. Create an inventory item
 
-- **Python backend:** [backend/python/README.md](backend/python/README.md) — venv, dependencies, `runserver`, Docker Compose for MongoDB
-- **Go backend:** [backend/go/README.md](backend/go/README.md) — `make setup`, `make build-and-run`, Docker Compose
-- **Frontend:** [frontend/README.md](frontend/README.md)
+**Request**
 
----
+```http
+POST /products
+Content-Type: application/json
+```
 
-## Development Workflow
+**Example body**
 
-### Making your first change
+```json
+{
+  "id": "sku-1001",
+  "name": "Wireless Mouse",
+  "description": "Ergonomic mouse with USB receiver",
+  "category": "Accessories",
+  "price": 24.99,
+  "brand": "LogiTech",
+  "quantity": 12
+}
+```
 
-Step-by-step tutorials live in the domain READMEs:
+**Success response**
 
-- **[backend/python/README.md](backend/python/README.md)** — Django starters (e.g. Hello World, Hello {name} API)
-- **[backend/go/README.md](backend/go/README.md)** — Go hello-world and APIs
-- **[frontend/README.md](frontend/README.md)** — React hello-world and APIs
+- Status: `201 Created`
+- Body: created product as JSON
 
-### Pushing Your First Change
+**Example**
 
-1. **Stage and commit**:
-   ```bash
-   git add .
-   git commit -m "Your descriptive commit message"
-   ```
-2. **Push to your forked repo (main branch by default):**
-   ```bash
-   git push origin main
-   ```
+```bash
+curl -X POST http://localhost:8080/products \
+  -H "Content-Type: application/json" \
+  -d '{
+    "id": "sku-1001",
+    "name": "Wireless Mouse",
+    "description": "Ergonomic mouse with USB receiver",
+    "category": "Accessories",
+    "price": 24.99,
+    "brand": "LogiTech",
+    "quantity": 12
+  }'
+```
 
----
+### 4. Update an inventory item
 
-## Running Tests
+**Request**
 
-See the domain READMEs for how to run tests in each stack:
+```http
+PUT /products/{id}
+Content-Type: application/json
+```
 
-- [backend/python/README.md](backend/python/README.md)
-- [backend/go/README.md](backend/go/README.md)
-- [frontend/README.md](frontend/README.md)
+**Example body**
 
----
+```json
+{
+  "name": "Wireless Mouse Pro",
+  "description": "Updated ergonomic mouse",
+  "category": "Accessories",
+  "price": 29.99,
+  "brand": "LogiTech",
+  "quantity": 8
+}
+```
 
-## Further Reading
+**Success response**
 
-Each domain has detailed README with links to relevant docs. In general:
+- Status: `200 OK`
+- Body: updated product as JSON
 
-- **Django:** [docs.djangoproject.com](https://docs.djangoproject.com/)
-- **React:** [react.dev](https://react.dev/learn)
-- **Go:** [go.dev/doc](https://go.dev/doc/)
-- **MongoDB:** [docs.mongodb.com](https://docs.mongodb.com/)
-- **Docker Compose:** [docs.docker.com/compose](https://docs.docker.com/compose/)
+**Example**
+
+```bash
+curl -X PUT http://localhost:8080/products/sku-1001 \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Wireless Mouse Pro",
+    "description": "Updated ergonomic mouse",
+    "category": "Accessories",
+    "price": 29.99,
+    "brand": "LogiTech",
+    "quantity": 8
+  }'
+```
+
+### 5. Delete an inventory item
+
+**Request**
+
+```http
+DELETE /products/{id}
+```
+
+**Success response**
+
+- Status: `204 No Content`
+
+**Not found**
+
+- Status: `404 Not Found`
+- Body: `product not found`
+
+**Example**
+
+```bash
+curl -X DELETE http://localhost:8080/products/sku-1001
+```
+
+## How To Run The Inventory API
+
+From `backend/go`:
+
+```bash
+make setup
+make build-and-run
+```
+
+If you want MongoDB available locally as well:
+
+```bash
+docker compose up -d --env-file .env.local
+```
+
+## Important Implementation Caveats
+
+These behaviors are important if you are integrating with the current API:
+
+- Products are stored only in memory via `MapProductRepository`. Restarting the server clears all inventory data.
+- MongoDB is configured in the project but the inventory API does not currently persist product data to MongoDB.
+- `POST /products` does not enforce unique IDs. Creating a product with an existing `id` silently overwrites the previous map entry.
+- Creating a product with an empty `id` is currently possible because there is no explicit ID validation.
+- `GET /products` returns items in map iteration order, so response ordering is not stable.
+- Error responses are plain text, not structured JSON.
+- The sample environment file and Docker config reference `APP_PORT=8000`, but the Go server code currently listens on `8080`.
+
+## Relevant Source Locations
+
+- `backend/go/cmd/app/main.go`: application entrypoint and route registration
+- `backend/go/pkg/products/handler`: HTTP handlers and route dispatch
+- `backend/go/pkg/products/controller`: validation and business logic
+- `backend/go/pkg/products/repository`: in-memory repository implementation
+- `backend/go/pkg/products/entity/product.go`: product schema
