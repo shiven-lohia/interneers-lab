@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"context"
 	"errors"
 	"github.com/shiven-lohia/interneers-lab/pkg/products/entity"
 	"github.com/shiven-lohia/interneers-lab/pkg/products/repository"
@@ -18,7 +19,7 @@ func NewProductController(repo repository.ProductRepository) *ProductController 
 
 // var ProductStore = map[string]entity.Product{}
 
-func (s *ProductController) CreateProduct(p entity.Product) (entity.Product, error) {
+func (s *ProductController) CreateProduct(ctx context.Context, p entity.Product) (entity.Product, error) {
 
 	if p.Name == "" {
 		return entity.Product{}, errors.New("Name is required")
@@ -32,18 +33,18 @@ func (s *ProductController) CreateProduct(p entity.Product) (entity.Product, err
 		return entity.Product{}, errors.New("Quantity cannot be negative")
 	}
 
-	return s.repo.Create(p)
+	return s.repo.Create(ctx, p)
 }
 
-func (s *ProductController) GetAllProducts() ([]entity.Product, error) {
-	return s.repo.GetAll()
+func (s *ProductController) GetAllProducts(ctx context.Context) ([]entity.Product, error) {
+	return s.repo.GetAll(ctx)
 }
 
-func (s *ProductController) GetProductById(id string) (entity.Product, error) {
-	return s.repo.GetByID(id)
+func (s *ProductController) GetProductById(ctx context.Context, id string) (entity.Product, error) {
+	return s.repo.GetByID(ctx, id)
 }
 
-func (s *ProductController) UpdateProduct(id string, p entity.Product) (entity.Product, error) {
+func (s *ProductController) UpdateProduct(ctx context.Context, id string, p entity.Product) (entity.Product, error) {
 
 	if p.Name == "" {
 		return entity.Product{}, errors.New("name is required")
@@ -57,9 +58,9 @@ func (s *ProductController) UpdateProduct(id string, p entity.Product) (entity.P
 		return entity.Product{}, errors.New("quantity cannot be negative")
 	}
 
-	return s.repo.Update(id, p)
+	return s.repo.Update(ctx, id, p)
 }
 
-func (s *ProductController) DeleteProduct(id string) error {
-	return s.repo.Delete(id)
+func (s *ProductController) DeleteProduct(ctx context.Context, id string) error {
+	return s.repo.Delete(ctx, id)
 }

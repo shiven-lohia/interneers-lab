@@ -55,7 +55,7 @@ func (h *ProductHandler) ProductsHandler(w http.ResponseWriter, r *http.Request)
 }
 
 func (h *ProductHandler) GetProductHandler(w http.ResponseWriter, r *http.Request) {
-	products, _ := h.controller.GetAllProducts()
+	products, _ := h.controller.GetAllProducts(r.Context())
 
 	w.Header().Set("Content-Type", "application/json")
 
@@ -71,7 +71,7 @@ func (h *ProductHandler) CreateProductHandler(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	createdProduct, err := h.controller.CreateProduct(product)
+	createdProduct, err := h.controller.CreateProduct(r.Context(), product)
 	if(err!=nil) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -86,7 +86,7 @@ func (h *ProductHandler) CreateProductHandler(w http.ResponseWriter, r *http.Req
 func (h *ProductHandler) GetProductByIDHandler(w http.ResponseWriter, r *http.Request) {
 	id := strings.TrimPrefix(r.URL.Path, "/products/")
 
-	product, err := h.controller.GetProductById(id)
+	product, err := h.controller.GetProductById(r.Context(), id)
 	if(err!=nil) {
 		http.Error(w, "Product not found", http.StatusNotFound)
 		return
@@ -107,7 +107,7 @@ func (h *ProductHandler) UpdateProductHandler(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	updatedProduct, err := h.controller.UpdateProduct(id, product)
+	updatedProduct, err := h.controller.UpdateProduct(r.Context(), id, product)
 	if(err!=nil) {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
@@ -120,7 +120,7 @@ func (h *ProductHandler) UpdateProductHandler(w http.ResponseWriter, r *http.Req
 func (h *ProductHandler) DeleteProductHandler(w http.ResponseWriter, r *http.Request) {
 	id := strings.TrimPrefix(r.URL.Path, "/products/")
 
-	err := h.controller.DeleteProduct(id)
+	err := h.controller.DeleteProduct(r.Context(), id)
 	if(err!=nil) {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
