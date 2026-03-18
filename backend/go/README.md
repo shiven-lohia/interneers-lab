@@ -1,206 +1,85 @@
-# Interneers Lab - Backend in Golang
+# Go Backend - Week 3 Progress (MongoDB Integration)
 
-Welcome to the **Interneers Lab 2026** Golang backend! This serves as a minimal starter kit for learning and experimenting with:
-- **Golang** (Go)
-- **MongoDB** (via Docker Compose)
-- Development environment in **VSCode** (recommended)
+This document summarizes the Week 3 backend progress for the inventory API, focused on the transition from in-memory storage to MongoDB persistence.
 
-**Important:** Use the **same email** you shared during onboarding when configuring Git and related tools. That ensures consistency across all internal systems.
+## 1. Week 3 Overview
 
+- The inventory module moved from a map-based in-memory repository to MongoDB-backed persistent storage.
+- The refactor followed clean architecture principles: handlers and controllers remained largely stable, while the repository implementation was replaced.
+- This preserved API behavior while improving storage durability and production readiness.
 
----
+## 2. MongoDB Integration
 
-## Table of Contents
+- MongoDB is now used as the backing data store for product inventory.
+- The backend uses the official Go driver: `go.mongodb.org/mongo-driver`.
+- Product data is stored in the `inventory.products` collection.
+- Repository operations now execute MongoDB queries instead of map reads/writes.
+- Connection startup includes both connect and health-check steps:
 
-1. [Prerequisites & Tooling](#prerequisites--tooling)
-2. [Setting Up the Project](#setting-up-the-project)
-3. [Running Services](#running-services)
-   - [Backend: Go](#backend-go)
-   - [Database: MongoDB via Docker Compose](#database-mongodb-via-docker-compose)
-4. [Verification of Installation](#verification-of-installation)
-5. [Development Workflow](#development-workflow)
-   - [Making Changes & Verifying](#making-changes--verifying)
-   - [Pushing Your First Change](#pushing-your-first-change)
-6. [Running Tests](#running-tests)
-7. [Docker Command Reference](#docker-command-reference)
-8. [Further Reading](#further-reading)
-9. [Common Commands Reference](#common-commands-reference)
+```go
+client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://localhost:27017"))
+if err != nil {
+    return nil, err
+}
 
----
-
-## Prerequisites & Tooling
-
-These are the essential tools you need:
-
-1. **Golang 1.23.6**
-
-   **Why?**
-
-   The project uses Go for the backend. Use the VSCode extension for the best experience: [Reference](https://code.visualstudio.com/docs/languages/go)
-
-2. **MongoDB 7.0.0**
-
-   **Why?**
-
-   The backend uses MongoDB as the database.
-
-   You don't need to install it separately; it is included in the docker compose file. You can download MongoDB Compass from [here](https://www.mongodb.com/try/download/compass) and connect to the database using the connection string provided in the docker compose file.
-
-3. **Docker & Docker Compose**
-
-   **Why?**
-
-   We use Docker to run MongoDB (and potentially other services) in containers. The project also exposes the App via Docker.
-
-   **Install**
-
-   You can download Docker Desktop from [here](https://www.docker.com/products/docker-desktop/) and install it.
-
-4. **Git**
-
-   **Why?**
-
-   Required for version control and pushing your changes.
-
-   **Install**
-
-   You can setup Git using this [guide](https://docs.github.com/en/get-started/quickstart/set-up-git). Optionally you may install the GitHub CLI for a better experience: [Reference](https://cli.github.com/)
-
----
-
-## Setting Up the Project
-
-The project has a simple Golang backend with a MongoDB database. Currently a hello world API is implemented.
-
-Run the following commands to setup the project:
-
-```bash
-make setup
-make build-and-run
+if err := client.Ping(ctx, nil); err != nil {
+    return nil, err
+}
 ```
 
-> **Note:** `make setup` is only needed once; it loads all the dependencies and sets up the environment variables.
+## 3. Repository Refactor
 
----
+- The repository interface contract was preserved, so controller and handler call sites continue to use the same abstraction.
+- A new `MongoProductRepository` now implements this interface.
+- This validates the architecture's decoupling: infrastructure can change without rewriting business logic.
 
-## Running Services
+## 4. Use of BSON
 
-### Backend: Go
+- BSON (Binary JSON) is MongoDB's native document format.
+- Queries and updates use `bson.M`, for example:
+  - `bson.M{"id": id}` for filters
+  - `bson.M{"$set": product}` for updates
+- The `Product` entity should include `bson` tags alongside JSON tags to ensure explicit field mapping between Go structs and MongoDB documents.
 
-After running `make build-and-run`, the Go backend is running. You can test the API in a new terminal (see [Making Changes & Verifying](#making-changes--verifying)).
+## 5. Context Propagation
 
----
+- `context.Context` was introduced across the inventory flow.
+- Context now flows end-to-end: handler -> controller -> repository -> MongoDB driver.
+- This enables cancellation and deadline propagation from HTTP requests down to database operations.
 
-### Database: MongoDB via Docker Compose
+## 6. Timeout Handling
 
-Inside `backend/go`, you'll find a `docker-compose.yaml`. To start the application and the database, run:
+- Repository methods use `context.WithTimeout` for database operations.
+- This guards against hanging or slow MongoDB calls and helps keep request latency bounded.
+- Timeouts also improve system resilience under network or database contention.
 
-```bash
-docker compose up -d --env-file .env.local
-```
+## 7. Improved Error Handling
 
-You can test the Mongo connection with the following command:
+- MongoDB-specific outcomes are now checked explicitly:
+  - `MatchedCount` in `UpdateOne`
+  - `DeletedCount` in `DeleteOne`
+- If no record is matched/deleted, the repository returns a not-found error.
+- This enables correct HTTP-level behavior for missing resources.
 
-```bash
-make mongo-login
-```
+## 8. API Behavior Improvements
 
-Or connect to Mongo directly using a UI tool like MongoDB Compass.
+- `GET /products` now returns an empty array (`[]`) when no records exist, instead of `null`.
+- `DELETE /products/{id}` returns `204 No Content` on success.
+- Missing resources correctly return `404 Not Found`.
 
----
+## 9. Testing
 
-## Verification of Installation
+- APIs were validated using Postman and `curl` for create/read/update/delete flows.
+- Stored data was verified in MongoDB Compass.
+- Manual tests confirmed behavior for both success and not-found scenarios.
 
-- **Go**: `go version` (should be 1.23.6 or compatible)
-- **Docker**: `docker --version`
-- **Docker Compose**: `docker compose version`
+## 10. Summary
 
-Confirm that all meet the minimum version requirements.
+- Week 3 established persistent inventory storage with MongoDB.
+- The codebase now demonstrates backend patterns commonly used in production services:
+  - repository abstraction
+  - context-aware database operations
+  - timeout-protected I/O
+  - behavior-driven HTTP error mapping
 
----
-
-## Development Workflow
-
-### Making Changes & Verifying
-
-In a new terminal, run the following command to test the API:
-
-```bash
-make test
-```
-
-You can also test the API with a name:
-
-```bash
-make welcome "John Doe"
-```
-
----
-
-### Pushing Your First Change
-
-1. **Stage and commit**:
-   ```bash
-   git add .
-   git commit -m "Your descriptive commit message"
-   ```
-2. **Push to your forked repo (main branch by default):**
-   ```bash
-   git push origin main
-   ```
-
----
-
-## Running Tests
-
-```bash
-make test
-```
-
----
-
-## Docker Command Reference
-
-The project uses Docker and Docker Compose to run the application and the database. The project also exposes the App via Docker.
-
-To see the logs you can run the following command:
-
-```bash
-docker compose logs -f
-```
-
-To stop you can run the following command:
-
-```bash
-docker compose down
-```
-
----
-
-## Further Reading
-
-- Go: https://go.dev/doc/
-- MongoDB: https://www.mongodb.com/docs/
-- Docker Compose: https://docs.docker.com/compose/
-- VSCode Go extension: https://code.visualstudio.com/docs/languages/go
-
----
-
-## Common Commands Reference
-
-```bash
-# Setup (once)
-make setup                                # Load dependencies and set up environment variables
-make build-and-run                        # Build and run the application
-
-# Testing
-make test                                 # Run tests
-make welcome "John Doe"                   # Test API with a name
-
-# Docker / MongoDB
-docker compose up -d --env-file .env.local   # Start application and database
-docker compose down                         # Stop containers
-docker compose ps                            # List running containers
-docker compose logs -f                       # View logs
-make mongo-login                            # Test MongoDB connection
-```
+The backend is now significantly closer to a production-ready service than the initial in-memory implementation.

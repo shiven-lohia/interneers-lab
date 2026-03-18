@@ -1,11 +1,15 @@
 package repository
 
-import "github.com/shiven-lohia/interneers-lab/pkg/products/entity"
+import (
+	"context"
+
+	"github.com/shiven-lohia/interneers-lab/pkg/products/entity"
+)
 
 type ProductRepository interface {
-	Create(product entity.Product) (entity.Product, error)
-	GetAll() ([]entity.Product, error)
-	GetByID(id string) (entity.Product, error)
-	Update(id string, product entity.Product) (entity.Product, error)
-	Delete(id string) error
+	Create(ctx context.Context, product entity.Product) (entity.Product, error)
+	GetAll(ctx context.Context) ([]entity.Product, error)
+	GetByID(ctx context.Context, id string) (entity.Product, error)
+	Update(ctx context.Context, id string, product entity.Product) (entity.Product, error)
+	Delete(ctx context.Context, id string) error
 }

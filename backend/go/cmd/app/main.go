@@ -22,7 +22,9 @@ func main() {
 
 	// PRODUCTS MODULE
 
-	repo := repository.NewMapProductRepository()
+	// repo := repository.NewMapProductRepository()
+	client, _ := repository.ConnectMongo()
+	repo := repository.NewMongoProductRepository(client)
 
 	pController := productController.NewProductController(repo)
 
