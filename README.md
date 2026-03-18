@@ -247,3 +247,15 @@ These behaviors are important if you are integrating with the current API:
 - `backend/go/pkg/products/controller`: validation and business logic
 - `backend/go/pkg/products/repository`: in-memory repository implementation
 - `backend/go/pkg/products/entity/product.go`: product schema
+
+## Week 3 Progress (MongoDB Integration)
+
+Week 3 focused on moving the inventory service from in-memory storage toward MongoDB-backed persistence while preserving the existing API flow.
+
+- Added MongoDB integration using the official Go driver (`go.mongodb.org/mongo-driver`).
+- Introduced `MongoProductRepository` so the repository layer can work with MongoDB collections.
+- Added connection health checks with `mongo.Connect` and `client.Ping`.
+- Introduced context propagation (`handler -> controller -> repository`) for DB calls.
+- Added timeout guards in repository operations using `context.WithTimeout`.
+- Improved CRUD reliability with proper Mongo result checks (`MatchedCount`, `DeletedCount`) and corresponding API responses.
+- Validated endpoints through Postman and curl, and verified stored data in MongoDB Compass.
