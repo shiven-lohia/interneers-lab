@@ -1,23 +1,23 @@
 package handler
 
 import (
+	"encoding/csv"
 	"encoding/json"
 	"net/http"
-	"strings"
 	"strconv"
-	"encoding/csv"
+	"strings"
 
 	"github.com/shiven-lohia/interneers-lab/pkg/products/entity"
-	"github.com/shiven-lohia/interneers-lab/pkg/products/controller"
+	"github.com/shiven-lohia/interneers-lab/pkg/products/service"
 )
 
 type ProductHandler struct {
-	controller *controller.ProductController
+	service *service.ProductService
 }
 
-func NewProductHandler(controller *controller.ProductController) *ProductHandler {
+func NewProductHandler(service *service.ProductService) *ProductHandler {
 	return &ProductHandler{
-		controller: controller,
+		service: service,
 	}
 }
 
@@ -28,8 +28,8 @@ func (h *ProductHandler) BulkCreateProductsHandler(w http.ResponseWriter, r *htt
 		return
 	}
 
-	file, _ ,err := r.FormFile("file")
-	if(err!=nil) {
+	file, _, err := r.FormFile("file")
+	if err != nil {
 		http.Error(w, "Error retrieving the file", http.StatusBadRequest)
 		return
 	}
@@ -43,17 +43,17 @@ func (h *ProductHandler) BulkCreateProductsHandler(w http.ResponseWriter, r *htt
 	}
 
 	var products []entity.Product
-	
+
 	for i, row := range records {
 		if i == 0 {
 			continue
 		}
-		if(len(row) < 5) {
+		if len(row) < 5 {
 			continue
 		}
 
 		price, err := strconv.ParseFloat(row[2], 64)
-		if(err!=nil) {
+		if err != nil {
 			continue
 		}
 
@@ -63,17 +63,17 @@ func (h *ProductHandler) BulkCreateProductsHandler(w http.ResponseWriter, r *htt
 		}
 
 		product := entity.Product{
-			ID:          row[0],
-			Name:        row[1],
-			Price: 	     price,
-			Quantity:    qty,
-			Brand: 	     row[4],
+			ID:       row[0],
+			Name:     row[1],
+			Price:    price,
+			Quantity: qty,
+			Brand:    row[4],
 		}
 		products = append(products, product)
 	}
 
-	createdProducts, err := h.controller.BulkCreateProducts(r.Context(), products)
-	if(err!=nil) {
+	createdProducts, err := h.service.BulkCreateProducts(r.Context(), products)
+	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -119,7 +119,7 @@ func (h *ProductHandler) ProductsHandler(w http.ResponseWriter, r *http.Request)
 }
 
 func (h *ProductHandler) GetProductHandler(w http.ResponseWriter, r *http.Request) {
-	products, _ := h.controller.GetAllProducts(r.Context())
+	products, _ := h.service.GetAllProducts(r.Context())
 
 	w.Header().Set("Content-Type", "application/json")
 
@@ -130,13 +130,13 @@ func (h *ProductHandler) CreateProductHandler(w http.ResponseWriter, r *http.Req
 	var product entity.Product
 
 	err := json.NewDecoder(r.Body).Decode(&product)
-	if(err!=nil) {
+	if err != nil {
 		http.Error(w, "Invalid Request Body", http.StatusBadRequest)
 		return
 	}
 
-	createdProduct, err := h.controller.CreateProduct(r.Context(), product)
-	if(err!=nil) {
+	createdProduct, err := h.service.CreateProduct(r.Context(), product)
+	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -150,8 +150,8 @@ func (h *ProductHandler) CreateProductHandler(w http.ResponseWriter, r *http.Req
 func (h *ProductHandler) GetProductByIDHandler(w http.ResponseWriter, r *http.Request) {
 	id := strings.TrimPrefix(r.URL.Path, "/products/")
 
-	product, err := h.controller.GetProductById(r.Context(), id)
-	if(err!=nil) {
+	product, err := h.service.GetProductById(r.Context(), id)
+	if err != nil {
 		http.Error(w, "Product not found", http.StatusNotFound)
 		return
 	}
@@ -166,13 +166,13 @@ func (h *ProductHandler) UpdateProductHandler(w http.ResponseWriter, r *http.Req
 	var product entity.Product
 
 	err := json.NewDecoder(r.Body).Decode(&product)
-	if(err!=nil) {
+	if err != nil {
 		http.Error(w, "Invalid Request Body", http.StatusBadRequest)
 		return
 	}
 
-	updatedProduct, err := h.controller.UpdateProduct(r.Context(), id, product)
-	if(err!=nil) {
+	updatedProduct, err := h.service.UpdateProduct(r.Context(), id, product)
+	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
@@ -184,8 +184,8 @@ func (h *ProductHandler) UpdateProductHandler(w http.ResponseWriter, r *http.Req
 func (h *ProductHandler) DeleteProductHandler(w http.ResponseWriter, r *http.Request) {
 	id := strings.TrimPrefix(r.URL.Path, "/products/")
 
-	err := h.controller.DeleteProduct(r.Context(), id)
-	if(err!=nil) {
+	err := h.service.DeleteProduct(r.Context(), id)
+	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}

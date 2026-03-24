@@ -7,9 +7,9 @@ import (
 
 	hellohandler "github.com/shiven-lohia/interneers-lab/pkg/helloworld/handler"
 
-	productController "github.com/shiven-lohia/interneers-lab/pkg/products/controller"
 	productHandler "github.com/shiven-lohia/interneers-lab/pkg/products/handler"
 	"github.com/shiven-lohia/interneers-lab/pkg/products/repository"
+	productService "github.com/shiven-lohia/interneers-lab/pkg/products/service"
 
 	"github.com/shiven-lohia/interneers-lab/pkg/middleware"
 )
@@ -30,9 +30,9 @@ func main() {
 
 	repo := repository.NewMongoProductRepository(client)
 
-	pController := productController.NewProductController(repo)
+	pService := productService.NewProductService(repo)
 
-	pHandler := productHandler.NewProductHandler(pController)
+	pHandler := productHandler.NewProductHandler(pService)
 
 	productHandler.RegisterRoutes(mux, pHandler)
 

@@ -1,25 +1,26 @@
-package controller
+package service
 
 import (
 	"context"
 	"errors"
+
 	"github.com/shiven-lohia/interneers-lab/pkg/products/entity"
 	"github.com/shiven-lohia/interneers-lab/pkg/products/repository"
 )
 
-type ProductController struct {
+type ProductService struct {
 	repo repository.ProductRepository
 }
 
-func NewProductController(repo repository.ProductRepository) *ProductController {
-	return &ProductController{
+func NewProductService(repo repository.ProductRepository) *ProductService {
+	return &ProductService{
 		repo: repo,
 	}
 }
 
 // var ProductStore = map[string]entity.Product{}
 
-func (s *ProductController) BulkCreateProducts(ctx context.Context, products []entity.Product) ([]entity.Product, error) {
+func (s *ProductService) BulkCreateProducts(ctx context.Context, products []entity.Product) ([]entity.Product, error) {
 
 	var createdProducts []entity.Product
 
@@ -35,8 +36,7 @@ func (s *ProductController) BulkCreateProducts(ctx context.Context, products []e
 	return createdProducts, nil
 }
 
-
-func (s *ProductController) CreateProduct(ctx context.Context, p entity.Product) (entity.Product, error) {
+func (s *ProductService) CreateProduct(ctx context.Context, p entity.Product) (entity.Product, error) {
 
 	if p.Name == "" {
 		return entity.Product{}, errors.New("Name is required")
@@ -53,15 +53,15 @@ func (s *ProductController) CreateProduct(ctx context.Context, p entity.Product)
 	return s.repo.Create(ctx, p)
 }
 
-func (s *ProductController) GetAllProducts(ctx context.Context) ([]entity.Product, error) {
+func (s *ProductService) GetAllProducts(ctx context.Context) ([]entity.Product, error) {
 	return s.repo.GetAll(ctx)
 }
 
-func (s *ProductController) GetProductById(ctx context.Context, id string) (entity.Product, error) {
+func (s *ProductService) GetProductById(ctx context.Context, id string) (entity.Product, error) {
 	return s.repo.GetByID(ctx, id)
 }
 
-func (s *ProductController) UpdateProduct(ctx context.Context, id string, p entity.Product) (entity.Product, error) {
+func (s *ProductService) UpdateProduct(ctx context.Context, id string, p entity.Product) (entity.Product, error) {
 
 	if p.Name == "" {
 		return entity.Product{}, errors.New("name is required")
@@ -78,6 +78,6 @@ func (s *ProductController) UpdateProduct(ctx context.Context, id string, p enti
 	return s.repo.Update(ctx, id, p)
 }
 
-func (s *ProductController) DeleteProduct(ctx context.Context, id string) error {
+func (s *ProductService) DeleteProduct(ctx context.Context, id string) error {
 	return s.repo.Delete(ctx, id)
 }
