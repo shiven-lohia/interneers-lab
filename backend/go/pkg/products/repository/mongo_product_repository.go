@@ -27,8 +27,25 @@ func (r *MongoProductRepository) Create(ctx context.Context, product entity.Prod
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 
-	_, err := r.collection.InsertOne(ctx, product)
-	return product, err
+	count, err := r.collection.CountDocuments(ctx, bson.M{"id": product.ID})
+	if err != nil {
+		return product, err
+	}
+
+	if count > 0 {
+		return product, errors.New("product with this id already exists")
+	}
+
+	_, err = r.collection.InsertOne(ctx, product)
+	if err != nil {
+		if mongo.IsDuplicateKeyError(err) {
+			return product, errors.New("product with this id already exists")
+		}
+
+		return product, err
+	}
+
+	return product, nil
 }
 
 func (r *MongoProductRepository) GetAll(ctx context.Context) ([]entity.Product, error) {

@@ -23,7 +23,11 @@ func main() {
 	// PRODUCTS MODULE
 
 	// repo := repository.NewMapProductRepository()
-	client, _ := repository.ConnectMongo()
+	client, err := repository.ConnectMongo()
+	if err != nil {
+		log.Fatal().Err(err).Msg("Failed to connect to MongoDB")
+	}
+
 	repo := repository.NewMongoProductRepository(client)
 
 	pController := productController.NewProductController(repo)
@@ -37,7 +41,7 @@ func main() {
 
 	log.Info().Msg("Server starting on :8080")
 
-	err := http.ListenAndServe(":8080", loggedMux)
+	err = http.ListenAndServe(":8080", loggedMux)
 	if err != nil {
 		log.Fatal().Err(err).Msg("Server failed to start")
 	}

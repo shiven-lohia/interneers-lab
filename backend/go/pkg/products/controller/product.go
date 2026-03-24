@@ -19,6 +19,23 @@ func NewProductController(repo repository.ProductRepository) *ProductController 
 
 // var ProductStore = map[string]entity.Product{}
 
+func (s *ProductController) BulkCreateProducts(ctx context.Context, products []entity.Product) ([]entity.Product, error) {
+
+	var createdProducts []entity.Product
+
+	for _, p := range products {
+		createdProduct, err := s.CreateProduct(ctx, p)
+		if err != nil {
+			continue
+		}
+
+		createdProducts = append(createdProducts, createdProduct)
+	}
+
+	return createdProducts, nil
+}
+
+
 func (s *ProductController) CreateProduct(ctx context.Context, p entity.Product) (entity.Product, error) {
 
 	if p.Name == "" {
