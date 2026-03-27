@@ -24,7 +24,7 @@ func NewProductService(
 	}
 }
 
-// var ProductStore = map[string]entity.Product{}
+// var ProductStore = map[string]entity.Product{} (deprecated, using repository instead)
 
 func (s *ProductService) BulkCreateProducts(ctx context.Context, products []entity.Product) ([]entity.Product, error) {
 

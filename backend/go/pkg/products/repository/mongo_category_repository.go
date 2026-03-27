@@ -18,6 +18,11 @@ func NewMongoCategoryRepository(col *mongo.Collection) *MongoCategoryRepository 
 	return &MongoCategoryRepository{collection: col}
 }
 
+// expose collection for testing purposes
+func (r *MongoCategoryRepository) Collection() *mongo.Collection {
+	return r.collection
+}
+
 func (r *MongoCategoryRepository) GetByID(ctx context.Context, id string) (entity.ProductCategory, error) {
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
