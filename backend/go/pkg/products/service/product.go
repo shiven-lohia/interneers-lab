@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+	"sync"
 
 	"github.com/shiven-lohia/interneers-lab/pkg/products/entity"
 	"github.com/shiven-lohia/interneers-lab/pkg/products/repository"
@@ -10,11 +11,16 @@ import (
 
 type ProductService struct {
 	repo repository.ProductRepository
+	categoryRepo repository.ProductCategoryRepository
 }
 
-func NewProductService(repo repository.ProductRepository) *ProductService {
+func NewProductService(
+	repo repository.ProductRepository,
+	categoryRepo repository.ProductCategoryRepository,
+) *ProductService {
 	return &ProductService{
 		repo: repo,
+		categoryRepo: categoryRepo,
 	}
 }
 
@@ -22,16 +28,29 @@ func NewProductService(repo repository.ProductRepository) *ProductService {
 
 func (s *ProductService) BulkCreateProducts(ctx context.Context, products []entity.Product) ([]entity.Product, error) {
 
+	var wg sync.WaitGroup
+	var mu sync.Mutex
+
 	var createdProducts []entity.Product
 
 	for _, p := range products {
-		createdProduct, err := s.CreateProduct(ctx, p)
-		if err != nil {
-			continue
-		}
+		wg.Add(1)
 
-		createdProducts = append(createdProducts, createdProduct)
+		go func(prod entity.Product) {
+			defer wg.Done()
+			
+			createdProduct, err := s.CreateProduct(ctx, prod)
+			if(err!=nil) {
+				return
+			}
+
+			mu.Lock()
+			createdProducts = append(createdProducts, createdProduct)
+			mu.Unlock()
+		} (p)
 	}
+
+	wg.Wait()
 
 	return createdProducts, nil
 }
@@ -50,11 +69,22 @@ func (s *ProductService) CreateProduct(ctx context.Context, p entity.Product) (e
 		return entity.Product{}, errors.New("Quantity cannot be negative")
 	}
 
+	if p.Brand == "" {
+		return entity.Product{}, errors.New("Brand is required")
+	}
+
+	if p.CategoryID != "" {
+		_, err := s.categoryRepo.GetByID(ctx, p.CategoryID)
+		if err != nil {
+			return entity.Product{}, errors.New("Invalid category ID")
+		}
+	}
+
 	return s.repo.Create(ctx, p)
 }
 
-func (s *ProductService) GetAllProducts(ctx context.Context) ([]entity.Product, error) {
-	return s.repo.GetAll(ctx)
+func (s *ProductService) GetAllProducts(ctx context.Context, categoryID string) ([]entity.Product, error) {
+	return s.repo.GetAll(ctx, categoryID)
 }
 
 func (s *ProductService) GetProductById(ctx context.Context, id string) (entity.Product, error) {
@@ -64,15 +94,26 @@ func (s *ProductService) GetProductById(ctx context.Context, id string) (entity.
 func (s *ProductService) UpdateProduct(ctx context.Context, id string, p entity.Product) (entity.Product, error) {
 
 	if p.Name == "" {
-		return entity.Product{}, errors.New("name is required")
+		return entity.Product{}, errors.New("Name is required")
 	}
 
 	if p.Price <= 0 {
-		return entity.Product{}, errors.New("price must be greater than 0")
+		return entity.Product{}, errors.New("Price must be greater than 0")
 	}
 
 	if p.Quantity < 0 {
-		return entity.Product{}, errors.New("quantity cannot be negative")
+		return entity.Product{}, errors.New("Quantity cannot be negative")
+	}
+
+	if p.Brand == "" {
+		return entity.Product{}, errors.New("Brand is required")
+	}
+
+	if p.CategoryID != "" {
+		_, err := s.categoryRepo.GetByID(ctx, p.CategoryID)
+		if err != nil {
+			return entity.Product{}, errors.New("Invalid category ID")
+		}
 	}
 
 	return s.repo.Update(ctx, id, p)

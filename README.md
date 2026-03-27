@@ -259,3 +259,19 @@ Week 3 focused on moving the inventory service from in-memory storage toward Mon
 - Added timeout guards in repository operations using `context.WithTimeout`.
 - Improved CRUD reliability with proper Mongo result checks (`MatchedCount`, `DeletedCount`) and corresponding API responses.
 - Validated endpoints through Postman and curl, and verified stored data in MongoDB Compass.
+
+## Week 4 Progress
+
+- Added ProductCategory domain model, repository layer (`MongoCategoryRepository`), and service layer (`ProductCategoryService`).
+- Implemented full Category CRUD APIs under `/categories` endpoint matching Product handler patterns.
+- Established Product ↔ Category relationship using `category_id` field in Product entity.
+- Added validation in ProductService to ensure products reference only valid categories via `GetByID` check.
+- Implemented category filtering for products using `GET /products?category_id=...` query parameter.
+- Refactored Product entity to remove redundant `category` field; use only `category_id` for database consistency.
+- Enforced `brand` as a required field in ProductService CreateProduct validation.
+- Implemented lazy schema evolution: existing products without brand remain valid on reads, but new/updated products require brand field.
+
+### TODOs
+
+- Move ID generation to backend (use UUID or Mongo ObjectID instead of client-provided IDs).
+- Implement batching + controlled concurrency (WaitGroups with batching/worker pool) for bulk product creation.

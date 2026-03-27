@@ -119,10 +119,14 @@ func (h *ProductHandler) ProductsHandler(w http.ResponseWriter, r *http.Request)
 }
 
 func (h *ProductHandler) GetProductHandler(w http.ResponseWriter, r *http.Request) {
-	products, _ := h.service.GetAllProducts(r.Context())
+	categoryID := r.URL.Query().Get("category_id")
+	products, err := h.service.GetAllProducts(r.Context(), categoryID)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
 	w.Header().Set("Content-Type", "application/json")
-
 	json.NewEncoder(w).Encode(products)
 }
 

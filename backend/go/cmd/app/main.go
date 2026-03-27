@@ -6,12 +6,10 @@ import (
 	"github.com/rs/zerolog/log"
 
 	hellohandler "github.com/shiven-lohia/interneers-lab/pkg/helloworld/handler"
-
+	"github.com/shiven-lohia/interneers-lab/pkg/middleware"
 	productHandler "github.com/shiven-lohia/interneers-lab/pkg/products/handler"
 	"github.com/shiven-lohia/interneers-lab/pkg/products/repository"
 	productService "github.com/shiven-lohia/interneers-lab/pkg/products/service"
-
-	"github.com/shiven-lohia/interneers-lab/pkg/middleware"
 )
 
 func main() {
@@ -22,18 +20,28 @@ func main() {
 
 	// PRODUCTS MODULE
 
-	// repo := repository.NewMapProductRepository()
 	client, err := repository.ConnectMongo()
 	if err != nil {
 		log.Fatal().Err(err).Msg("Failed to connect to MongoDB")
 	}
 
-	repo := repository.NewMongoProductRepository(client)
+	// product repo
+	pRepo := repository.NewMongoProductRepository(client)
 
-	pService := productService.NewProductService(repo)
+	// category repo
+	cCollection := client.Database("inventory").Collection("categories")
+	cRepo := repository.NewMongoCategoryRepository(cCollection)
 
+	// services
+	cService := productService.NewProductCategoryService(cRepo)
+	pService := productService.NewProductService(pRepo, cRepo)
+
+	// handlers
+	cHandler := productHandler.NewProductCategoryHandler(cService)
 	pHandler := productHandler.NewProductHandler(pService)
 
+	// routes
+	productHandler.RegisterCategoryRoutes(mux, cHandler)
 	productHandler.RegisterRoutes(mux, pHandler)
 
 	// apply middleware

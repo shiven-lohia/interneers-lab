@@ -48,18 +48,22 @@ func (r *MongoProductRepository) Create(ctx context.Context, product entity.Prod
 	return product, nil
 }
 
-func (r *MongoProductRepository) GetAll(ctx context.Context) ([]entity.Product, error) {
+func (r *MongoProductRepository) GetAll(ctx context.Context, categoryID string) ([]entity.Product, error) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	cursor, err := r.collection.Find(ctx, bson.M{})
+	filter := bson.M{}
+	if categoryID != "" {
+		filter["category_id"] = categoryID
+	}
+
+	cursor, err := r.collection.Find(ctx, filter)
 	if err != nil {
 		return nil, err
 	}
 
 	var products []entity.Product
-
 	err = cursor.All(ctx, &products)
 	if err != nil {
 		return nil, err
