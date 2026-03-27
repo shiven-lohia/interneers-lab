@@ -46,10 +46,11 @@ func main() {
 
 	// apply middleware
 	loggedMux := middleware.LoggingMiddleware(mux)
+	corsMux := middleware.CORSMiddleware(loggedMux)
 
 	log.Info().Msg("Server starting on :8080")
 
-	err = http.ListenAndServe(":8080", loggedMux)
+	err = http.ListenAndServe(":8080", corsMux)
 	if err != nil {
 		log.Fatal().Err(err).Msg("Server failed to start")
 	}
