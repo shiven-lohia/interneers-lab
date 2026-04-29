@@ -275,3 +275,13 @@ Week 3 focused on moving the inventory service from in-memory storage toward Mon
 
 - Move ID generation to backend (use UUID or Mongo ObjectID instead of client-provided IDs).
 - Implement batching + controlled concurrency (WaitGroups with batching/worker pool) for bulk product creation.
+
+## Week 6 - Frontend Basics
+
+- Built a basic frontend using plain HTML, CSS, and vanilla JavaScript.
+- Created a product display tile and styled it with CSS.
+- Integrated frontend with backend APIs using `fetch`.
+- Used browser developer tools (DOM inspector, console, and network tab) for debugging.
+- Dynamically updated the UI using DOM manipulation based on API responses.
+- Rendered multiple products by generating HTML elements dynamically.
+- Added simple CSS animations to improve user experience.
