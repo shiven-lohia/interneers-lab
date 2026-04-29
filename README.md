@@ -31,15 +31,15 @@ Each inventory item is represented as a product with the following JSON shape:
 
 ### Fields
 
-| Field | Type | Required | Notes |
-| --- | --- | --- | --- |
-| `id` | `string` | Yes in practice | Must be supplied by the client. The API does not generate IDs. |
-| `name` | `string` | Yes | Must not be empty. |
-| `description` | `string` | No | Free-form text. |
-| `category` | `string` | No | Free-form text. |
-| `price` | `number` | Yes | Must be greater than `0`. |
-| `brand` | `string` | No | Free-form text. |
-| `quantity` | `number` | Yes | Must be `0` or greater. |
+| Field         | Type     | Required        | Notes                                                          |
+| ------------- | -------- | --------------- | -------------------------------------------------------------- |
+| `id`          | `string` | Yes in practice | Must be supplied by the client. The API does not generate IDs. |
+| `name`        | `string` | Yes             | Must not be empty.                                             |
+| `description` | `string` | No              | Free-form text.                                                |
+| `category`    | `string` | No              | Free-form text.                                                |
+| `price`       | `number` | Yes             | Must be greater than `0`.                                      |
+| `brand`       | `string` | No              | Free-form text.                                                |
+| `quantity`    | `number` | Yes             | Must be `0` or greater.                                        |
 
 ## Validation Rules
 
@@ -285,3 +285,35 @@ Week 3 focused on moving the inventory service from in-memory storage toward Mon
 - Dynamically updated the UI using DOM manipulation based on API responses.
 - Rendered multiple products by generating HTML elements dynamically.
 - Added simple CSS animations to improve user experience.
+
+## Week 7 Updates
+
+- Set up React + TypeScript frontend using Yarn
+- Created reusable `<Product />` component for displaying product cards
+- Created `<ProductList />` to render multiple products
+- Added navbar/header for navigation
+- Added routing using React Router
+- Added dedicated Product Page (`/products/:id`)
+- Connected frontend to backend APIs using `fetch()`
+- Added product details and edit functionality
+- Styled product cards, buttons, hover effects, and layouts
+
+## Week 8 Updates
+
+- Added category support in frontend
+- Grouped products by category on Product List page
+- Added ability to move products across categories
+- Added create-new-category flow from Product Edit page
+- Added Categories page (`/categories`)
+- Added Individual Category page (`/categories/:id`)
+- Clicking category opens category details with products in that category
+- Reused existing `<Product />` component inside category pages
+- Improved navbar with working navigation links
+- Added loading spinner components (implemented partially / to be expanded)
+- Improved UI consistency across pages
+
+## TODO (after Week 8 commit)
+
+- Add global error message components across all pages
+- Further frontend redesign / UI revamp
+- Improve loading states and transitions

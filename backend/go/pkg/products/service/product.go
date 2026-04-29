@@ -84,11 +84,37 @@ func (s *ProductService) CreateProduct(ctx context.Context, p entity.Product) (e
 }
 
 func (s *ProductService) GetAllProducts(ctx context.Context, categoryID string) ([]entity.Product, error) {
-	return s.repo.GetAll(ctx, categoryID)
+	products, err := s.repo.GetAll(ctx, categoryID)
+	if err != nil {
+		return nil, err
+	}
+
+	for i, p := range products {
+		if p.CategoryID != "" {
+			category, err := s.categoryRepo.GetByID(ctx, p.CategoryID)
+			if err == nil {
+				products[i].Category = &category
+			}
+		}
+	}
+
+	return products, nil
 }
 
 func (s *ProductService) GetProductById(ctx context.Context, id string) (entity.Product, error) {
-	return s.repo.GetByID(ctx, id)
+	product, err := s.repo.GetByID(ctx, id)
+	if err != nil {
+		return entity.Product{}, err
+	}
+
+	if product.CategoryID != "" {
+		category, err := s.categoryRepo.GetByID(ctx, product.CategoryID)
+		if err == nil {
+			product.Category = &category
+		}
+	}
+
+	return product, nil
 }
 
 func (s *ProductService) UpdateProduct(ctx context.Context, id string, p entity.Product) (entity.Product, error) {
