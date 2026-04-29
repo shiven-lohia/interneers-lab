@@ -22,6 +22,11 @@ func NewMongoProductRepository(client *mongo.Client) *MongoProductRepository {
 	}
 }
 
+// expose collection for testing purposes
+func (r *MongoProductRepository) Collection() *mongo.Collection {
+	return r.collection
+}
+
 func (r *MongoProductRepository) Create(ctx context.Context, product entity.Product) (entity.Product, error) {
 
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
