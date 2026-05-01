@@ -301,7 +301,7 @@ func TestIntegration_BulkCreateProducts_AllValid(t *testing.T) {
 		productRepo.Collection().DeleteMany(ctx, map[string]interface{}{})
 	})
 
-	csv := "name,price,quantity,brand\nMilk,50,10,Amul\nBread,30,5,Britannia\nPhone,5000,2,Samsung\n"
+	csv := "name,description,category_id,price,quantity,brand\nMilk,Fresh milk,,50,10,Amul\nBread,Sliced bread,,30,5,Britannia\nPhone,Latest model,,5000,2,Samsung\n"
 	req := buildCSVRequest(t, csv)
 	w := httptest.NewRecorder()
 
@@ -342,9 +342,8 @@ func TestIntegration_BulkCreateProducts_PartialFailure(t *testing.T) {
 		productRepo.Collection().DeleteMany(ctx, map[string]interface{}{})
 	})
 
-	// Row 1: valid. Row 2: invalid price (non-numeric, skipped by CSV parser).
-	// Row 3: missing brand — passes CSV parse (4 cols) but fails service validation.
-	csv := "name,price,quantity,brand\nMilk,50,10,Amul\nPhone,5000,2,\n"
+	// Row 1: valid. Row 2: missing brand — passes CSV parse (6 cols) but fails service validation.
+	csv := "name,description,category_id,price,quantity,brand\nMilk,Fresh milk,,50,10,Amul\nPhone,Latest model,,5000,2,\n"
 	req := buildCSVRequest(t, csv)
 	w := httptest.NewRecorder()
 
@@ -383,7 +382,7 @@ func TestIntegration_BulkCreateProducts_BackendGeneratesIDs(t *testing.T) {
 		productRepo.Collection().DeleteMany(ctx, map[string]interface{}{})
 	})
 
-	csv := "name,price,quantity,brand\nApple,120,50,FreshFarm\nBanana,40,100,FreshFarm\n"
+	csv := "name,description,category_id,price,quantity,brand\nApple,Fresh apple,,120,50,FreshFarm\nBanana,Ripe banana,,40,100,FreshFarm\n"
 	req := buildCSVRequest(t, csv)
 	w := httptest.NewRecorder()
 

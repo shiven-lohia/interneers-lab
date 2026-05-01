@@ -1,0 +1,91 @@
+name,description,category_id,price,quantity,brand
+Basmati Rice 5kg,Long grain aromatic rice,69f458cd65a8f21c1d07d4d8,320,80,India Gate
+Toor Dal 1kg,Split pigeon peas,69f458cd65a8f21c1d07d4d8,140,120,Tata Sampann
+Chana Dal 1kg,Split chickpeas,69f458cd65a8f21c1d07d4d8,110,100,Tata Sampann
+Sunflower Oil 1L,Refined sunflower cooking oil,69f458cd65a8f21c1d07d4d8,180,90,Saffola
+Mustard Oil 1L,Cold-pressed mustard oil,69f458cd65a8f21c1d07d4d8,160,70,Fortune
+Sugar 1kg,Fine white granulated sugar,69f458cd65a8f21c1d07d4d8,55,200,Uttam
+Atta 10kg,Whole wheat flour,69f458cd65a8f21c1d07d4d8,390,60,Aashirvaad
+Salt 1kg,Iodised table salt,69f458cd65a8f21c1d07d4d8,25,300,Tata
+Turmeric Powder 200g,Pure haldi powder,69f458cd65a8f21c1d07d4d8,85,150,MDH
+Red Chilli Powder 200g,Hot red chilli powder,69f458cd65a8f21c1d07d4d8,90,140,Everest
+Coriander Powder 100g,Ground coriander,69f458cd65a8f21c1d07d4d8,45,160,MDH
+Garam Masala 100g,Aromatic spice blend,69f458cd65a8f21c1d07d4d8,75,130,Everest
+Tomato Ketchup 500g,Classic tomato ketchup,69f458cd65a8f21c1d07d4d8,95,110,Heinz
+Green Tea 25 bags,Antioxidant green tea,69f458cd65a8f21c1d07d4d9,120,90,Tetley
+Black Tea 250g,Strong CTC black tea,69f458cd65a8f21c1d07d4d9,185,80,Tata Tea
+Instant Coffee 200g,Classic instant coffee,69f458cd65a8f21c1d07d4d9,420,60,Nescafe
+Cold Coffee Mix 200g,Chilled coffee blend,69f458cd65a8f21c1d07d4d9,350,50,Bru
+Orange Juice 1L,100% fresh orange juice,69f458cd65a8f21c1d07d4d9,145,75,Tropicana
+Apple Juice 1L,Natural apple juice,69f458cd65a8f21c1d07d4d9,140,70,Real
+Mango Drink 600ml,Thick mango fruit drink,69f458cd65a8f21c1d07d4d9,60,150,Maaza
+Cola 2L,Fizzy cola drink,69f458cd65a8f21c1d07d4d9,95,180,Coca-Cola
+Lemon Soda 500ml,Sparkling lemon soda,69f458cd65a8f21c1d07d4d9,40,200,7UP
+Mineral Water 1L,Purified drinking water,69f458cd65a8f21c1d07d4d9,20,500,Bisleri
+Energy Drink 250ml,Caffeinated energy drink,69f458cd65a8f21c1d07d4d9,110,100,Red Bull
+Coconut Water 500ml,Natural tender coconut water,69f458cd65a8f21c1d07d4d9,55,120,Raw Pressery
+Toned Milk 1L,Low-fat pasteurised milk,69f458cd65a8f21c1d07d4da,58,200,Amul
+Full Cream Milk 1L,Rich full cream milk,69f458cd65a8f21c1d07d4da,68,180,Mother Dairy
+Curd 400g,Set dahi,69f458cd65a8f21c1d07d4da,45,160,Amul
+Greek Yogurt 400g,Thick and creamy yogurt,69f458cd65a8f21c1d07d4da,95,80,Epigamia
+Paneer 200g,Fresh cottage cheese,69f458cd65a8f21c1d07d4da,90,120,Amul
+Butter 500g,Salted white butter,69f458cd65a8f21c1d07d4da,275,90,Amul
+Ghee 500ml,Pure cow ghee,69f458cd65a8f21c1d07d4da,420,70,Mother Dairy
+Cheese Slices 200g,Processed cheese slices,69f458cd65a8f21c1d07d4da,180,100,Amul
+Condensed Milk 400g,Sweetened condensed milk,69f458cd65a8f21c1d07d4da,115,80,Nestle
+Buttermilk 500ml,Chilled spiced lassi,69f458cd65a8f21c1d07d4da,35,140,Amul
+White Bread 400g,Soft sliced white bread,69f458ce65a8f21c1d07d4db,45,150,Britannia
+Brown Bread 400g,Whole wheat brown bread,69f458ce65a8f21c1d07d4db,55,130,Harvest Gold
+Pav 6 pieces,Soft dinner rolls,69f458ce65a8f21c1d07d4db,30,200,Modern
+Multigrain Bread 400g,Nutritious multigrain loaf,69f458ce65a8f21c1d07d4db,70,90,Bonn
+Croissant 4 pieces,Buttery flaky pastries,69f458ce65a8f21c1d07d4db,120,60,La Boulangerie
+Muffin Chocolate 2 pieces,Rich chocolate muffins,69f458ce65a8f21c1d07d4db,80,80,English Oven
+Banana Bread 300g,Moist banana loaf cake,69f458ce65a8f21c1d07d4db,145,50,Theobroma
+Rusk 300g,Crunchy toasted rusk,69f458ce65a8f21c1d07d4db,60,170,Britannia
+Nankhatai 250g,Traditional cardamom cookies,69f458ce65a8f21c1d07d4db,95,100,Parle
+Potato Chips 150g,Classic salted potato chips,69f458ce65a8f21c1d07d4dc,50,200,Lays
+Baked Chips 100g,Lighter baked potato crisps,69f458ce65a8f21c1d07d4dc,45,180,Bingo
+Popcorn 150g,Butter flavoured popcorn,69f458ce65a8f21c1d07d4dc,60,160,Act II
+Peanuts Roasted 200g,Salted crunchy peanuts,69f458ce65a8f21c1d07d4dc,55,140,Haldirams
+Mixture Namkeen 300g,Spicy Indian snack mix,69f458ce65a8f21c1d07d4dc,85,130,Haldirams
+Marie Biscuits 300g,Classic light biscuits,69f458ce65a8f21c1d07d4dc,40,220,Britannia
+Good Day Cashew 200g,Cashew flavoured cookies,69f458ce65a8f21c1d07d4dc,65,190,Britannia
+Oreo 150g,Chocolate sandwich cookies,69f458ce65a8f21c1d07d4dc,60,200,Cadbury
+Kurkure 90g,Masala corn puffs,69f458ce65a8f21c1d07d4dc,25,250,Kurkure
+Dark Chocolate 100g,70% cocoa dark chocolate,69f458ce65a8f21c1d07d4dc,195,100,Lindt
+Trail Mix 200g,Nuts and dried fruits mix,69f458ce65a8f21c1d07d4dc,220,75,Happilo
+Detergent Powder 4kg,Top load washing powder,69f458ce65a8f21c1d07d4dd,430,60,Ariel
+Liquid Detergent 1L,Front load washing liquid,69f458ce65a8f21c1d07d4dd,380,55,Surf Excel
+Dishwash Gel 500ml,Grease-cutting dish soap,69f458ce65a8f21c1d07d4dd,99,120,Vim
+Floor Cleaner 1L,Phenyl-based floor cleaner,69f458ce65a8f21c1d07d4dd,145,80,Lizol
+Toilet Cleaner 500ml,Thick bleach toilet cleaner,69f458ce65a8f21c1d07d4dd,115,90,Harpic
+All-Purpose Spray 500ml,Multi-surface cleaning spray,69f458ce65a8f21c1d07d4dd,175,70,Colin
+Garbage Bags 30 pieces,Medium black garbage bags,69f458ce65a8f21c1d07d4dd,85,150,Diversey
+Steel Scrub Pad 3 pieces,Heavy-duty steel scrubbers,69f458ce65a8f21c1d07d4dd,55,200,Scotch-Brite
+Paper Towels 2 rolls,Absorbent kitchen paper rolls,69f458ce65a8f21c1d07d4dd,120,100,Bounty
+Aluminium Foil 10m,Food-grade aluminium wrap,69f458ce65a8f21c1d07d4dd,95,130,Tata
+Insect Repellent Spray 200ml,Fast-acting mosquito killer,69f458ce65a8f21c1d07d4dd,185,80,Hit
+Air Freshener 300ml,Long-lasting room spray,69f458ce65a8f21c1d07d4dd,210,70,Febreze
+Shampoo 400ml,Damage repair shampoo,69f458ce65a8f21c1d07d4de,295,90,Dove
+Conditioner 200ml,Smooth and silky conditioner,69f458ce65a8f21c1d07d4de,245,80,TRESemmé
+Soap Bar 3 pack,Moisturising bathing soap,69f458ce65a8f21c1d07d4de,95,180,Dove
+Toothpaste 150g,Cavity protection toothpaste,69f458ce65a8f21c1d07d4de,115,200,Colgate
+Toothbrush Medium,Soft-medium bristle brush,69f458ce65a8f21c1d07d4de,45,250,Oral-B
+Face Wash 100ml,Oil control face wash,69f458ce65a8f21c1d07d4de,165,120,Himalaya
+Moisturiser SPF 50 75ml,Daily sunscreen moisturiser,69f458ce65a8f21c1d07d4de,350,70,Neutrogena
+Deodorant 150ml,48-hour antiperspirant spray,69f458ce65a8f21c1d07d4de,225,100,Axe
+Hand Wash 250ml,Antibacterial liquid hand wash,69f458ce65a8f21c1d07d4de,120,160,Dettol
+Shaving Cream 70g,Sensitive skin shaving cream,69f458ce65a8f21c1d07d4de,145,90,Gillette
+Lip Balm SPF 15,Hydrating lip balm with SPF,69f458ce65a8f21c1d07d4de,99,150,Chapstick
+Feminine Hygiene Pads 8 pieces,Ultra-thin overnight pads,69f458ce65a8f21c1d07d4de,95,180,Whisper
+Cotton Buds 100 pieces,Gentle ear cleaning buds,69f458ce65a8f21c1d07d4de,55,220,Johnsons
+Frozen Peas 500g,Sweet garden peas,69f458cf65a8f21c1d07d4df,90,100,McCain
+Frozen French Fries 750g,Crispy oven fries,69f458cf65a8f21c1d07d4df,180,90,McCain
+Frozen Pizza Margherita,Classic cheese and tomato pizza,69f458cf65a8f21c1d07d4df,320,50,Dr. Oetker
+Frozen Chicken Nuggets 400g,Crispy breaded nuggets,69f458cf65a8f21c1d07d4df,295,60,Venky's
+Frozen Paratha 5 pieces,Stuffed aloo parathas,69f458cf65a8f21c1d07d4df,165,80,Kawan
+Ice Cream Vanilla 500ml,Classic vanilla tub,69f458cf65a8f21c1d07d4df,225,70,Kwality Walls
+Ice Cream Chocolate 500ml,Rich chocolate tub,69f458cf65a8f21c1d07d4df,235,65,Amul
+Frozen Corn 400g,Sweet kernel corn,69f458cf65a8f21c1d07d4df,95,110,Safal
+Frozen Mixed Vegetables 500g,Peas carrot corn blend,69f458cf65a8f21c1d07d4df,115,100,Safal
+Ice Lolly Mango 6 pieces,Tropical mango ice lollies,69f458cf65a8f21c1d07d4df,120,85,Amul

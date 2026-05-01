@@ -119,10 +119,10 @@ Handler  →  Service  →  Repository  →  MongoDB
 
 **Bulk product creation — `POST /products/bulk`:**
 - Accepts `multipart/form-data` with a CSV file in the `file` field
-- CSV format: `name,price,quantity,brand` (header required, no ID column)
+- CSV format: `name,description,category_id,price,quantity,brand` (header required, no ID column; `description` and `category_id` may be empty)
 - Up to 10 rows processed concurrently via worker-pool semaphore
 - Returns `207 Multi-Status` with `created[]` and `errors[]` arrays
-- Malformed rows (< 4 columns, non-numeric price/quantity) silently skipped; business-rule failures reported in `errors[]`
+- Malformed rows (< 6 columns, non-numeric price/quantity) silently skipped; business-rule failures reported in `errors[]`
 
 ```bash
 curl -X POST http://localhost:8080/products/bulk \
@@ -272,10 +272,13 @@ Base URL: `http://localhost:8080`
 ### Bulk Create CSV
 
 ```
-name,price,quantity,brand
-Milk,50,10,Amul
-Phone,5000,2,Samsung
+name,description,category_id,price,quantity,brand
+Milk,Fresh whole milk,<category-id>,50,10,Amul
+Phone,,<category-id>,5000,2,Samsung
+Headphones,,,1200,15,Sony
 ```
+
+`description` and `category_id` are optional — leave them blank but keep the commas.
 
 ### Bulk Create Response (207)
 

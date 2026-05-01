@@ -48,25 +48,27 @@ func (h *ProductHandler) BulkCreateProductsHandler(w http.ResponseWriter, r *htt
 		if i == 0 {
 			continue // skip header
 		}
-		if len(row) < 4 {
+		if len(row) < 6 {
 			continue // skip malformed rows
 		}
 
-		price, err := strconv.ParseFloat(row[1], 64)
+		price, err := strconv.ParseFloat(row[3], 64)
 		if err != nil {
 			continue
 		}
 
-		qty, err := strconv.Atoi(row[2])
+		qty, err := strconv.Atoi(row[4])
 		if err != nil {
 			continue
 		}
 
 		product := entity.Product{
-			Name:     row[0],
-			Price:    price,
-			Quantity: qty,
-			Brand:    row[3],
+			Name:        row[0],
+			Description: row[1],
+			CategoryID:  row[2],
+			Price:       price,
+			Quantity:    qty,
+			Brand:       row[5],
 		}
 		products = append(products, product)
 	}
