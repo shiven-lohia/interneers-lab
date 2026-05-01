@@ -41,12 +41,20 @@ function ProductListPage() {
     <PageShell>
       <div className="product-list__header">
         <h1 className="product-list__title">Products</h1>
-        <button
-          className="product-list__add-btn"
-          onClick={() => navigate("/products/new")}
-        >
-          Add product
-        </button>
+        <div className="product-list__header-actions">
+          <button
+            className="product-list__import-btn"
+            onClick={() => navigate("/products/bulk")}
+          >
+            Import CSV
+          </button>
+          <button
+            className="product-list__add-btn"
+            onClick={() => navigate("/products/new")}
+          >
+            Add product
+          </button>
+        </div>
       </div>
 
       {error && <ErrorMessage message={error} />}

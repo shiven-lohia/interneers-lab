@@ -16,3 +16,13 @@ export interface Product {
 }
 
 export type ProductFormData = Omit<Product, "category">;
+
+export interface BulkImportError {
+  index: number;
+  reason: string;
+}
+
+export interface BulkImportResult {
+  created: Product[];
+  errors: BulkImportError[];
+}

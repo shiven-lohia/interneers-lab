@@ -31,3 +31,18 @@ export async function apiPost<T>(path: string, body: unknown): Promise<T> {
   }
   return res.json();
 }
+
+export async function apiPostMultipart<T>(
+  path: string,
+  body: FormData,
+): Promise<T> {
+  const res = await fetch(`${BASE_URL}${path}`, {
+    method: "POST",
+    body,
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(text);
+  }
+  return res.json();
+}
