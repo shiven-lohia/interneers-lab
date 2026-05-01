@@ -111,6 +111,21 @@
   gap: var(--space-md);
 }
 
+.report-tab__table-link {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: var(--color-border);
+  text-underline-offset: 2px;
+  transition:
+    color 0.15s,
+    text-decoration-color 0.15s;
+}
+
+.report-tab__table-link:hover {
+  color: var(--color-sage-deep);
+  text-decoration-color: var(--color-sage-deep);
+}
+
 @media (max-width: 600px) {
   .report-tab__filters {
     flex-direction: column;

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import {
   BarChart,
   Bar,
@@ -19,13 +20,14 @@ import "./LowStockTab.css";
 const SAGE = "oklch(72% 0.09 155)";
 const CLAY = "oklch(60% 0.16 25)";
 const DEFAULT_THRESHOLD = 10;
+const STORAGE_KEY = "reports_threshold";
 
 function LowStockTab() {
   const [report, setReport] = useState<LowStockReport | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [thresholdInput, setThresholdInput] = useState(
-    String(DEFAULT_THRESHOLD),
+    () => sessionStorage.getItem(STORAGE_KEY) ?? String(DEFAULT_THRESHOLD),
   );
   const [filterError, setFilterError] = useState("");
 
@@ -44,7 +46,8 @@ function LowStockTab() {
   };
 
   useEffect(() => {
-    fetchReport(DEFAULT_THRESHOLD);
+    const stored = sessionStorage.getItem(STORAGE_KEY);
+    fetchReport(stored ? Number(stored) : DEFAULT_THRESHOLD);
   }, []);
 
   const handleApply = () => {
@@ -97,7 +100,10 @@ function LowStockTab() {
             type="number"
             min={0}
             value={thresholdInput}
-            onChange={(e) => setThresholdInput(e.target.value)}
+            onChange={(e) => {
+              setThresholdInput(e.target.value);
+              sessionStorage.setItem(STORAGE_KEY, e.target.value);
+            }}
           />
         </div>
         <Button
@@ -151,11 +157,27 @@ function LowStockTab() {
                 <tbody>
                   {report.products.map((p) => (
                     <tr key={p.id}>
-                      <td>{p.name}</td>
+                      <td>
+                        <Link
+                          to={`/products/${p.id}`}
+                          className="report-tab__table-link"
+                        >
+                          {p.name}
+                        </Link>
+                      </td>
                       <td
                         className={p.category_title ? "" : "low-stock__muted"}
                       >
-                        {p.category_title || "Uncategorized"}
+                        {p.category_id ? (
+                          <Link
+                            to={`/categories/${p.category_id}`}
+                            className="report-tab__table-link"
+                          >
+                            {p.category_title}
+                          </Link>
+                        ) : (
+                          "Uncategorized"
+                        )}
                       </td>
                       <td className="report-tab__table-num low-stock__qty">
                         {p.quantity}
@@ -224,7 +246,7 @@ function LowStockTab() {
                         maxBarSize={28}
                         radius={[0, 4, 4, 0]}
                       >
-                        {report.categories.map((cat, i) => (
+                        {report.categories.map((cat) => (
                           <Cell
                             key={cat.category_id}
                             fill={cat.percentage >= 30 ? CLAY : SAGE}
@@ -252,7 +274,14 @@ function LowStockTab() {
                           cat.percentage >= 30 ? "low-stock__row--danger" : ""
                         }
                       >
-                        <td>{cat.category_title}</td>
+                        <td>
+                          <Link
+                            to={`/categories/${cat.category_id}`}
+                            className="report-tab__table-link"
+                          >
+                            {cat.category_title}
+                          </Link>
+                        </td>
                         <td className="report-tab__table-num">
                           {cat.low_stock_count}
                         </td>

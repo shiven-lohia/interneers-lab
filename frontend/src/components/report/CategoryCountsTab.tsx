@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import {
   BarChart,
   Bar,
@@ -21,8 +22,12 @@ function CategoryCountsTab() {
   const [report, setReport] = useState<CategoryCountsReport | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [minCount, setMinCount] = useState("");
-  const [maxCount, setMaxCount] = useState("");
+  const [minCount, setMinCount] = useState(
+    () => sessionStorage.getItem("reports_minCount") ?? "",
+  );
+  const [maxCount, setMaxCount] = useState(
+    () => sessionStorage.getItem("reports_maxCount") ?? "",
+  );
   const [filterError, setFilterError] = useState("");
 
   const fetch = (min?: number, max?: number) => {
@@ -40,7 +45,12 @@ function CategoryCountsTab() {
   };
 
   useEffect(() => {
-    fetch();
+    const storedMin = sessionStorage.getItem("reports_minCount");
+    const storedMax = sessionStorage.getItem("reports_maxCount");
+    fetch(
+      storedMin ? Number(storedMin) : undefined,
+      storedMax ? Number(storedMax) : undefined,
+    );
   }, []);
 
   const handleApply = () => {
@@ -94,7 +104,10 @@ function CategoryCountsTab() {
             min={0}
             placeholder="No minimum"
             value={minCount}
-            onChange={(e) => setMinCount(e.target.value)}
+            onChange={(e) => {
+              setMinCount(e.target.value);
+              sessionStorage.setItem("reports_minCount", e.target.value);
+            }}
           />
         </div>
         <div className="report-tab__filter-group">
@@ -108,7 +121,10 @@ function CategoryCountsTab() {
             min={0}
             placeholder="No maximum"
             value={maxCount}
-            onChange={(e) => setMaxCount(e.target.value)}
+            onChange={(e) => {
+              setMaxCount(e.target.value);
+              sessionStorage.setItem("reports_maxCount", e.target.value);
+            }}
           />
         </div>
         <Button
@@ -181,7 +197,14 @@ function CategoryCountsTab() {
                 <tbody>
                   {report.categories.map((c) => (
                     <tr key={c.category_id}>
-                      <td>{c.category_title}</td>
+                      <td>
+                        <Link
+                          to={`/categories/${c.category_id}`}
+                          className="report-tab__table-link"
+                        >
+                          {c.category_title}
+                        </Link>
+                      </td>
                       <td className="report-tab__table-num">
                         {c.product_count}
                       </td>

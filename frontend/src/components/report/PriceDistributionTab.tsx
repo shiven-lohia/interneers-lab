@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import {
   BarChart,
   Bar,
@@ -16,7 +17,8 @@ import ErrorMessage from "../ui/ErrorMessage";
 import { buildCSV, downloadCSV } from "../../utils/csv";
 import "./PriceDistributionTab.css";
 
-const DEFAULT_BUCKETS = "100,500,1000,5000";
+const DEFAULT_BUCKETS = "50,100,500,1000";
+const STORAGE_KEY = "reports_buckets";
 
 const BUCKET_COLORS = [
   "oklch(72% 0.09 155)",
@@ -31,7 +33,9 @@ function PriceDistributionTab() {
   const [report, setReport] = useState<PriceDistributionReport | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [bucketsInput, setBucketsInput] = useState(DEFAULT_BUCKETS);
+  const [bucketsInput, setBucketsInput] = useState(
+    () => sessionStorage.getItem(STORAGE_KEY) ?? DEFAULT_BUCKETS,
+  );
   const [filterError, setFilterError] = useState("");
 
   const fetchReport = (buckets?: string) => {
@@ -49,7 +53,7 @@ function PriceDistributionTab() {
   };
 
   useEffect(() => {
-    fetchReport(DEFAULT_BUCKETS);
+    fetchReport(sessionStorage.getItem(STORAGE_KEY) ?? DEFAULT_BUCKETS);
   }, []);
 
   const handleApply = () => {
@@ -63,7 +67,7 @@ function PriceDistributionTab() {
     const nums = parts.map(Number);
     if (nums.some(isNaN)) {
       setFilterError(
-        "Bucket edges must be comma-separated numbers (e.g. 100,500,1000).",
+        "Bucket edges must be comma-separated numbers (e.g. 50,100,500,1000).",
       );
       return;
     }
@@ -115,7 +119,10 @@ function PriceDistributionTab() {
             type="text"
             placeholder={DEFAULT_BUCKETS}
             value={bucketsInput}
-            onChange={(e) => setBucketsInput(e.target.value)}
+            onChange={(e) => {
+              setBucketsInput(e.target.value);
+              sessionStorage.setItem(STORAGE_KEY, e.target.value);
+            }}
           />
         </div>
         <Button
@@ -129,8 +136,8 @@ function PriceDistributionTab() {
       </div>
       <p className="report-tab__filter-hint">
         Comma-separated price thresholds (e.g.{" "}
-        <code className="report-tab__code">100,500,1000,5000</code>). Products
-        are grouped into: 0–first, first–second, …, last+.
+        <code className="report-tab__code">50,100,500,1000</code>). Products are
+        grouped into: 0–first, first–second, …, last+.
       </p>
 
       {filterError && <p className="report-tab__filter-error">{filterError}</p>}
@@ -187,7 +194,14 @@ function PriceDistributionTab() {
                 <tbody>
                   {report.categories.map((cat) => (
                     <tr key={cat.category_id}>
-                      <td>{cat.category_title}</td>
+                      <td>
+                        <Link
+                          to={`/categories/${cat.category_id}`}
+                          className="report-tab__table-link"
+                        >
+                          {cat.category_title}
+                        </Link>
+                      </td>
                       {cat.counts.map((count, i) => (
                         <td key={i} className="report-tab__table-num">
                           {count}
