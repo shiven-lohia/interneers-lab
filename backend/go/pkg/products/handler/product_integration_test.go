@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"io"
+	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -269,5 +271,135 @@ func TestIntegration_CreateProduct_InvalidCategory(t *testing.T) {
 
 	if len(products) != 0 {
 		t.Fatalf("expected 0 products, got %d", len(products))
+	}
+}
+
+func buildCSVRequest(t *testing.T, csvContent string) *http.Request {
+	t.Helper()
+	var body bytes.Buffer
+	writer := multipart.NewWriter(&body)
+	part, err := writer.CreateFormFile("file", "products.csv")
+	if err != nil {
+		t.Fatal(err)
+	}
+	io.WriteString(part, csvContent)
+	writer.Close()
+
+	req := httptest.NewRequest(http.MethodPost, "/products/bulk", &body)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
+	return req
+}
+
+func TestIntegration_BulkCreateProducts_AllValid(t *testing.T) {
+	pHandler, _, productRepo := setupTest(t)
+
+	ctx := context.Background()
+
+	productRepo.Collection().DeleteMany(ctx, map[string]interface{}{})
+
+	t.Cleanup(func() {
+		productRepo.Collection().DeleteMany(ctx, map[string]interface{}{})
+	})
+
+	csv := "name,price,quantity,brand\nMilk,50,10,Amul\nBread,30,5,Britannia\nPhone,5000,2,Samsung\n"
+	req := buildCSVRequest(t, csv)
+	w := httptest.NewRecorder()
+
+	pHandler.BulkCreateProductsHandler(w, req)
+
+	if w.Code != http.StatusMultiStatus {
+		t.Fatalf("expected status 207, got %d: %s", w.Code, w.Body.String())
+	}
+
+	var result service.BulkCreateResult
+	if err := json.Unmarshal(w.Body.Bytes(), &result); err != nil {
+		t.Fatal(err)
+	}
+
+	if len(result.Created) != 3 {
+		t.Fatalf("expected 3 created products, got %d", len(result.Created))
+	}
+
+	if len(result.Errors) != 0 {
+		t.Fatalf("expected 0 errors, got %d", len(result.Errors))
+	}
+
+	for _, p := range result.Created {
+		if p.ID == "" {
+			t.Fatalf("expected backend-generated ID, got empty string for product %q", p.Name)
+		}
+	}
+}
+
+func TestIntegration_BulkCreateProducts_PartialFailure(t *testing.T) {
+	pHandler, _, productRepo := setupTest(t)
+
+	ctx := context.Background()
+
+	productRepo.Collection().DeleteMany(ctx, map[string]interface{}{})
+
+	t.Cleanup(func() {
+		productRepo.Collection().DeleteMany(ctx, map[string]interface{}{})
+	})
+
+	// Row 1: valid. Row 2: invalid price (non-numeric, skipped by CSV parser).
+	// Row 3: missing brand — passes CSV parse (4 cols) but fails service validation.
+	csv := "name,price,quantity,brand\nMilk,50,10,Amul\nPhone,5000,2,\n"
+	req := buildCSVRequest(t, csv)
+	w := httptest.NewRecorder()
+
+	pHandler.BulkCreateProductsHandler(w, req)
+
+	if w.Code != http.StatusMultiStatus {
+		t.Fatalf("expected status 207, got %d", w.Code)
+	}
+
+	var result service.BulkCreateResult
+	if err := json.Unmarshal(w.Body.Bytes(), &result); err != nil {
+		t.Fatal(err)
+	}
+
+	if len(result.Created) != 1 {
+		t.Fatalf("expected 1 created product, got %d", len(result.Created))
+	}
+
+	if len(result.Errors) != 1 {
+		t.Fatalf("expected 1 error, got %d", len(result.Errors))
+	}
+
+	if result.Errors[0].Reason == "" {
+		t.Fatal("expected non-empty error reason")
+	}
+}
+
+func TestIntegration_BulkCreateProducts_BackendGeneratesIDs(t *testing.T) {
+	pHandler, _, productRepo := setupTest(t)
+
+	ctx := context.Background()
+
+	productRepo.Collection().DeleteMany(ctx, map[string]interface{}{})
+
+	t.Cleanup(func() {
+		productRepo.Collection().DeleteMany(ctx, map[string]interface{}{})
+	})
+
+	csv := "name,price,quantity,brand\nApple,120,50,FreshFarm\nBanana,40,100,FreshFarm\n"
+	req := buildCSVRequest(t, csv)
+	w := httptest.NewRecorder()
+
+	pHandler.BulkCreateProductsHandler(w, req)
+
+	var result service.BulkCreateResult
+	json.Unmarshal(w.Body.Bytes(), &result)
+
+	ids := map[string]bool{}
+	for _, p := range result.Created {
+		if p.ID == "" {
+			t.Fatal("got empty ID for a created product")
+		}
+		if ids[p.ID] {
+			t.Fatalf("duplicate ID %q across bulk-created products", p.ID)
+		}
+		ids[p.ID] = true
 	}
 }

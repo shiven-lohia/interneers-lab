@@ -7,6 +7,7 @@ import (
 
 	"github.com/shiven-lohia/interneers-lab/pkg/products/entity"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -31,6 +32,10 @@ func (r *MongoProductRepository) Create(ctx context.Context, product entity.Prod
 
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
+
+	if product.ID == "" {
+		product.ID = primitive.NewObjectID().Hex()
+	}
 
 	count, err := r.collection.CountDocuments(ctx, bson.M{"id": product.ID})
 	if err != nil {

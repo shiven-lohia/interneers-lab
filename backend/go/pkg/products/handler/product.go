@@ -46,41 +46,40 @@ func (h *ProductHandler) BulkCreateProductsHandler(w http.ResponseWriter, r *htt
 
 	for i, row := range records {
 		if i == 0 {
-			continue
+			continue // skip header
 		}
-		if len(row) < 5 {
-			continue
+		if len(row) < 4 {
+			continue // skip malformed rows
 		}
 
-		price, err := strconv.ParseFloat(row[2], 64)
+		price, err := strconv.ParseFloat(row[1], 64)
 		if err != nil {
 			continue
 		}
 
-		qty, err := strconv.Atoi(row[3])
+		qty, err := strconv.Atoi(row[2])
 		if err != nil {
 			continue
 		}
 
 		product := entity.Product{
-			ID:       row[0],
-			Name:     row[1],
+			Name:     row[0],
 			Price:    price,
 			Quantity: qty,
-			Brand:    row[4],
+			Brand:    row[3],
 		}
 		products = append(products, product)
 	}
 
-	createdProducts, err := h.service.BulkCreateProducts(r.Context(), products)
+	result, err := h.service.BulkCreateProducts(r.Context(), products)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(createdProducts)
+	w.WriteHeader(http.StatusMultiStatus)
+	json.NewEncoder(w).Encode(result)
 }
 
 func (h *ProductHandler) ProductsHandler(w http.ResponseWriter, r *http.Request) {
