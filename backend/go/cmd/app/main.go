@@ -5,7 +5,6 @@ import (
 
 	"github.com/rs/zerolog/log"
 
-	hellohandler "github.com/shiven-lohia/interneers-lab/pkg/helloworld/handler"
 	"github.com/shiven-lohia/interneers-lab/pkg/middleware"
 	productHandler "github.com/shiven-lohia/interneers-lab/pkg/products/handler"
 	"github.com/shiven-lohia/interneers-lab/pkg/products/repository"
@@ -15,8 +14,6 @@ import (
 func main() {
 
 	mux := http.NewServeMux()
-
-	hellohandler.RegisterHelloHandler(mux)
 
 	// PRODUCTS MODULE
 
