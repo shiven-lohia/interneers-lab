@@ -34,6 +34,8 @@ Integration tests (handler layer) require a running MongoDB instance. Set connec
 
 All commands run from `frontend/`.
 
+> **After every frontend change:** run `yarn eslint --max-warnings=0 src` (or check the ESLint output) to catch Prettier formatting errors before committing.
+
 ```bash
 yarn install              # install dependencies
 yarn start                # dev server on :3000

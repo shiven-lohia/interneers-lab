@@ -179,7 +179,10 @@ function ProductEditForm({
 
       <div className="form-delete">
         {!confirmDelete ? (
-          <button className="delete-link" onClick={() => setConfirmDelete(true)}>
+          <button
+            className="delete-link"
+            onClick={() => setConfirmDelete(true)}
+          >
             Delete product
           </button>
         ) : (
