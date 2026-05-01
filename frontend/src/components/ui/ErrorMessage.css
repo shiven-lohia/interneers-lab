@@ -1,0 +1,9 @@
+.error-message {
+  background-color: oklch(96% 0.018 25);
+  border: 1px solid oklch(82% 0.055 25);
+  border-radius: var(--radius-sm);
+  color: var(--color-clay);
+  padding: var(--space-md) var(--space-lg);
+  margin: var(--space-md) 0;
+  font-size: var(--font-size-sm);
+}

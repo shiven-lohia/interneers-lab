@@ -1,0 +1,303 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-04-30T00:00:00Z",
+  "title": "Design System: My Store",
+  "extensions": {
+    "colorMeta": {
+      "sage": {
+        "role": "primary",
+        "displayName": "Sage Moss",
+        "canonical": "oklch(72% 0.09 155)",
+        "tonalRamp": [
+          "oklch(20% 0.09 155)",
+          "oklch(30% 0.09 155)",
+          "oklch(40% 0.09 155)",
+          "oklch(50% 0.10 155)",
+          "oklch(60% 0.10 155)",
+          "oklch(72% 0.09 155)",
+          "oklch(83% 0.07 155)",
+          "oklch(94% 0.015 155)"
+        ]
+      },
+      "sage-deep": {
+        "role": "primary",
+        "displayName": "Deep Moss",
+        "canonical": "oklch(65% 0.11 155)",
+        "tonalRamp": [
+          "oklch(20% 0.11 155)",
+          "oklch(30% 0.11 155)",
+          "oklch(40% 0.11 155)",
+          "oklch(50% 0.11 155)",
+          "oklch(60% 0.11 155)",
+          "oklch(65% 0.11 155)",
+          "oklch(78% 0.08 155)",
+          "oklch(91% 0.02 155)"
+        ]
+      },
+      "pale-sage": {
+        "role": "tertiary",
+        "displayName": "Pale Sage",
+        "canonical": "oklch(94% 0.015 155)",
+        "tonalRamp": [
+          "oklch(25% 0.015 155)",
+          "oklch(38% 0.015 155)",
+          "oklch(50% 0.015 155)",
+          "oklch(62% 0.015 155)",
+          "oklch(72% 0.015 155)",
+          "oklch(82% 0.015 155)",
+          "oklch(90% 0.015 155)",
+          "oklch(94% 0.015 155)"
+        ]
+      },
+      "parchment": {
+        "role": "neutral",
+        "displayName": "Parchment White",
+        "canonical": "oklch(99% 0.004 95)",
+        "tonalRamp": [
+          "oklch(18% 0.006 95)",
+          "oklch(30% 0.007 95)",
+          "oklch(45% 0.008 95)",
+          "oklch(57% 0.009 95)",
+          "oklch(70% 0.009 95)",
+          "oklch(82% 0.009 95)",
+          "oklch(92% 0.006 95)",
+          "oklch(99% 0.004 95)"
+        ]
+      },
+      "canvas": {
+        "role": "neutral",
+        "displayName": "Warm Canvas",
+        "canonical": "oklch(96% 0.008 95)",
+        "tonalRamp": [
+          "oklch(18% 0.008 95)",
+          "oklch(30% 0.008 95)",
+          "oklch(45% 0.008 95)",
+          "oklch(57% 0.008 95)",
+          "oklch(70% 0.008 95)",
+          "oklch(82% 0.008 95)",
+          "oklch(91% 0.008 95)",
+          "oklch(96% 0.008 95)"
+        ]
+      },
+      "chalk": {
+        "role": "neutral",
+        "displayName": "Warm Chalk",
+        "canonical": "oklch(87% 0.010 95)",
+        "tonalRamp": [
+          "oklch(20% 0.010 95)",
+          "oklch(32% 0.010 95)",
+          "oklch(44% 0.010 95)",
+          "oklch(56% 0.010 95)",
+          "oklch(68% 0.010 95)",
+          "oklch(78% 0.010 95)",
+          "oklch(87% 0.010 95)",
+          "oklch(95% 0.006 95)"
+        ]
+      },
+      "stone": {
+        "role": "neutral",
+        "displayName": "Warm Stone",
+        "canonical": "oklch(82% 0.012 95)",
+        "tonalRamp": [
+          "oklch(20% 0.012 95)",
+          "oklch(32% 0.012 95)",
+          "oklch(44% 0.012 95)",
+          "oklch(56% 0.012 95)",
+          "oklch(66% 0.012 95)",
+          "oklch(75% 0.012 95)",
+          "oklch(82% 0.012 95)",
+          "oklch(92% 0.008 95)"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Warm Ink",
+        "canonical": "oklch(22% 0.008 95)",
+        "tonalRamp": [
+          "oklch(10% 0.006 95)",
+          "oklch(16% 0.007 95)",
+          "oklch(22% 0.008 95)",
+          "oklch(35% 0.008 95)",
+          "oklch(50% 0.009 95)",
+          "oklch(65% 0.009 95)",
+          "oklch(80% 0.008 95)",
+          "oklch(93% 0.006 95)"
+        ]
+      },
+      "ash": {
+        "role": "neutral",
+        "displayName": "Quiet Ash",
+        "canonical": "oklch(57% 0.010 95)",
+        "tonalRamp": [
+          "oklch(15% 0.010 95)",
+          "oklch(25% 0.010 95)",
+          "oklch(37% 0.010 95)",
+          "oklch(47% 0.010 95)",
+          "oklch(57% 0.010 95)",
+          "oklch(67% 0.010 95)",
+          "oklch(78% 0.010 95)",
+          "oklch(90% 0.008 95)"
+        ]
+      },
+      "clay": {
+        "role": "error",
+        "displayName": "Muted Clay",
+        "canonical": "oklch(60% 0.16 25)",
+        "tonalRamp": [
+          "oklch(20% 0.16 25)",
+          "oklch(30% 0.16 25)",
+          "oklch(40% 0.16 25)",
+          "oklch(50% 0.16 25)",
+          "oklch(60% 0.16 25)",
+          "oklch(70% 0.12 25)",
+          "oklch(82% 0.08 25)",
+          "oklch(94% 0.04 25)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "title": { "displayName": "Title", "purpose": "Page headings and section headings. Top of hierarchy on every screen." },
+      "body":  { "displayName": "Body",  "purpose": "All prose, metadata, field values. Max 65ch on reading surfaces." },
+      "label": { "displayName": "Label", "purpose": "Form labels, column headers, category section headings. Uppercase tracked — structural divider." },
+      "caption": { "displayName": "Caption", "purpose": "Supporting metadata — stock counts, secondary data. Quiet Ash color." }
+    },
+    "shadows": [
+      {
+        "name": "flat",
+        "value": "none",
+        "purpose": "All cards and containers at rest. Tonal contrast from Parchment on Canvas is sufficient."
+      },
+      {
+        "name": "hover-lift",
+        "value": "0 4px 16px oklch(22% 0.008 95 / 0.10)",
+        "purpose": "Clickable cards on hover. Warm-tinted, soft, directional."
+      },
+      {
+        "name": "elevated",
+        "value": "0 8px 24px oklch(22% 0.008 95 / 0.14)",
+        "purpose": "Open dropdowns, active popovers. Slightly stronger; same warm family."
+      }
+    ],
+    "motion": [
+      {
+        "name": "standard",
+        "value": "0.2s ease",
+        "purpose": "Default transition for color, border, opacity, and box-shadow state changes."
+      },
+      {
+        "name": "lift",
+        "value": "transform 0.2s ease",
+        "purpose": "Hover lift on interactive cards and buttons (translateY(-1px) or translateY(-4px))."
+      }
+    ],
+    "breakpoints": [
+      { "name": "sm",  "value": "640px"  },
+      { "name": "md",  "value": "768px"  },
+      { "name": "lg",  "value": "1024px" },
+      { "name": "xl",  "value": "1200px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Main action trigger. Sage Moss fill. Used once per form or screen section.",
+      "html": "<button class=\"ds-btn-primary\">Save Product</button>",
+      "css": ".ds-btn-primary { background: oklch(72% 0.09 155); color: oklch(99% 0.004 95); padding: 10px 18px; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; cursor: pointer; transition: background 0.2s ease, transform 0.2s ease; } .ds-btn-primary:hover { background: oklch(65% 0.11 155); transform: translateY(-1px); } .ds-btn-primary:focus-visible { outline: 2px solid oklch(72% 0.09 155); outline-offset: 2px; } .ds-btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Neutral action. Warm Chalk fill. Used for Cancel and supporting actions.",
+      "html": "<button class=\"ds-btn-secondary\">Cancel</button>",
+      "css": ".ds-btn-secondary { background: oklch(87% 0.010 95); color: oklch(22% 0.008 95); padding: 10px 18px; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; cursor: pointer; transition: background 0.2s ease, transform 0.2s ease; } .ds-btn-secondary:hover { background: oklch(82% 0.012 95); transform: translateY(-1px); } .ds-btn-secondary:focus-visible { outline: 2px solid oklch(72% 0.09 155); outline-offset: 2px; } .ds-btn-secondary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }"
+    },
+    {
+      "name": "Danger Button",
+      "kind": "button",
+      "refersTo": "button-danger",
+      "description": "Destructive action. Muted Clay fill. Calm, not alarming.",
+      "html": "<button class=\"ds-btn-danger\">Delete</button>",
+      "css": ".ds-btn-danger { background: oklch(60% 0.16 25); color: oklch(99% 0.004 95); padding: 10px 18px; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; cursor: pointer; transition: background 0.2s ease, transform 0.2s ease; } .ds-btn-danger:hover { background: oklch(54% 0.18 25); transform: translateY(-1px); } .ds-btn-danger:focus-visible { outline: 2px solid oklch(60% 0.16 25); outline-offset: 2px; } .ds-btn-danger:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }"
+    },
+    {
+      "name": "Product Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Clickable inventory item tile. Flat at rest, lifts on hover.",
+      "html": "<div class=\"ds-product-card\"><h3 class=\"ds-product-card__name\">Leather Notebook</h3><p><strong>Brand:</strong> Leuchtturm</p><p><strong>Price:</strong> ₹480</p><p><strong>Stock:</strong> 12</p></div>",
+      "css": ".ds-product-card { background: oklch(99% 0.004 95); border: 1px solid oklch(87% 0.010 95); border-radius: 8px; padding: 12px; box-shadow: none; cursor: pointer; transition: box-shadow 0.2s ease, border-color 0.2s ease, transform 0.2s ease; display: flex; flex-direction: column; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; } .ds-product-card:hover { box-shadow: 0 4px 16px oklch(22% 0.008 95 / 0.10); border-color: oklch(82% 0.012 95); transform: translateY(-4px); } .ds-product-card__name { margin: 0 0 8px; font-size: 18px; font-weight: 600; color: oklch(22% 0.008 95); } .ds-product-card p { margin: 4px 0; font-size: 14px; color: oklch(22% 0.008 95); }"
+    },
+    {
+      "name": "Category Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Clickable category tile in the category list.",
+      "html": "<div class=\"ds-category-card\"><strong class=\"ds-category-card__title\">Stationery</strong><p class=\"ds-category-card__desc\">Notebooks, pens, and desk accessories.</p></div>",
+      "css": ".ds-category-card { background: oklch(99% 0.004 95); border: 1px solid oklch(87% 0.010 95); border-radius: 8px; padding: 12px; box-shadow: none; cursor: pointer; transition: box-shadow 0.2s ease, border-color 0.2s ease, transform 0.2s ease; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; } .ds-category-card:hover { box-shadow: 0 4px 16px oklch(22% 0.008 95 / 0.10); border-color: oklch(82% 0.012 95); transform: translateY(-4px); } .ds-category-card__title { font-size: 16px; font-weight: 600; color: oklch(22% 0.008 95); } .ds-category-card__desc { margin: 8px 0 0; font-size: 14px; color: oklch(57% 0.010 95); font-style: italic; }"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Standard form field with uppercase label above. Focus shifts border to Sage Moss.",
+      "html": "<div class=\"ds-field\"><label class=\"ds-field__label\" for=\"ds-input-demo\">Product Name</label><input class=\"ds-input\" id=\"ds-input-demo\" type=\"text\" placeholder=\"Enter name\" /></div>",
+      "css": ".ds-field { display: flex; flex-direction: column; gap: 4px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; } .ds-field__label { font-size: 13px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: oklch(57% 0.010 95); } .ds-input { border: 1px solid oklch(87% 0.010 95); border-radius: 6px; padding: 8px 12px; font-size: 14px; color: oklch(22% 0.008 95); background: oklch(99% 0.004 95); outline: none; transition: border-color 0.2s ease; font-family: inherit; } .ds-input:focus { border: 2px solid oklch(72% 0.09 155); padding: 7px 11px; } .ds-input::placeholder { color: oklch(57% 0.010 95); } .ds-input:disabled { background: oklch(96% 0.008 95); color: oklch(57% 0.010 95); cursor: not-allowed; }"
+    },
+    {
+      "name": "Navigation Bar",
+      "kind": "nav",
+      "refersTo": "button-primary",
+      "description": "Dark anchoring header. The only Warm Ink surface in the interface.",
+      "html": "<nav class=\"ds-navbar\"><span class=\"ds-navbar__logo\">My Store</span><div class=\"ds-navbar__links\"><a href=\"#\" class=\"ds-navbar__link\">Products</a><a href=\"#\" class=\"ds-navbar__link\">Categories</a></div></nav>",
+      "css": ".ds-navbar { display: flex; justify-content: space-between; align-items: center; background: oklch(22% 0.008 95); color: oklch(99% 0.004 95); padding: 15px 30px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; } .ds-navbar__logo { font-size: 18px; font-weight: 600; color: oklch(99% 0.004 95); } .ds-navbar__links { display: flex; gap: 20px; } .ds-navbar__link { color: oklch(99% 0.004 95); text-decoration: none; font-weight: 500; font-size: 15px; transition: opacity 0.2s ease; } .ds-navbar__link:hover { opacity: 0.85; text-decoration: underline; }"
+    },
+    {
+      "name": "Category Section Header",
+      "kind": "custom",
+      "refersTo": "card",
+      "description": "Pale Sage strip with uppercase label. Divides grouped product sections without extra borders.",
+      "html": "<div class=\"ds-section-header\"><h2 class=\"ds-section-header__title\">Stationery</h2></div>",
+      "css": ".ds-section-header { background: oklch(94% 0.015 155); border-bottom: 2px solid oklch(87% 0.010 95); padding: 8px 20px; margin-bottom: 12px; } .ds-section-header__title { margin: 0; font-size: 13px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: oklch(22% 0.008 95); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Clear Ledger",
+    "overview": "A ledger is not decorative. It is precise, structured, and quietly confident — every entry in its place, every column legible at a glance. This interface carries that character: pastel surfaces that organize without competing, typography that delivers information without ceremony, and space used with intention. Nothing here is accidental.\n\nThe palette is warm and soft — sage greens, warm whites, quiet ash — but never precious. Color is working structure: it marks section boundaries, signals interaction, and guides the eye from section to action. The goal is that a reviewer pauses and sees considered decisions, not assembled defaults.\n\nThis system rejects the generic purple-gradient SaaS aesthetic entirely. No dark-mode-by-default, no glowing cards, no gradient-filled buttons, no glassmorphism, no decorative blurs. Calm and efficient — the interface earns attention by staying out of the way.",
+    "keyCharacteristics": [
+      "Single pastel sage accent on a warm off-white ground",
+      "Generous whitespace; sections breathe before they stack",
+      "Uppercase tracked labels as structural dividers — no extra borders needed",
+      "Flat cards at rest; elevation earned only through hover state",
+      "Every neutral carries a fractional warm tint — the warmth is invisible as a fact and perceptible as a feeling"
+    ],
+    "rules": [
+      { "name": "The One Accent Rule",      "body": "Sage Moss appears on one interaction type per screen at a time. Pale Sage handles ambient hierarchy. Sage Moss marks action.", "section": "colors" },
+      { "name": "The Warm Tint Rule",       "body": "Every neutral carries a fractional warm tint (hue 95, chroma 0.004–0.012). Pure white and pure black are prohibited.", "section": "colors" },
+      { "name": "The Label-as-Divider Rule","body": "Uppercase tracked labels (13px, 600, 0.04em) replace visual separators. Before adding a rule or border, ask whether a label can carry the structural weight instead.", "section": "typography" },
+      { "name": "The Earned Elevation Rule","body": "Shadows are a response to state, not a badge of importance. A static, non-interactive surface has no shadow.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do use Sage Moss as the only saturated accent. One color carries action — its restraint is the point.",
+      "Do tint every neutral toward hue 95, chroma 0.004–0.012. Pure white and pure black are banned.",
+      "Do use uppercase tracked labels (13px, 600, 0.04em) as structural dividers before reaching for borders.",
+      "Do keep all cards flat at rest. Shadows appear on hover only.",
+      "Do use Pale Sage tints for ambient hierarchy before using shadows or borders.",
+      "Do keep layouts open: one PageShell at max-width 1200px with consistent lg (20px) padding.",
+      "Do use transform and opacity for all animation. Never animate layout properties."
+    ],
+    "donts": [
+      "Don't use purple, violet, indigo, or any blue-shifted hue as an accent. The purple-gradient SaaS aesthetic is explicitly banned.",
+      "Don't use gradient backgrounds, gradient-filled buttons, or background-clip text gradients.",
+      "Don't use border-left or border-right greater than 1px as a colored accent stripe on cards or list items.",
+      "Don't default to dark mode. Warm Ink is used only for the Navbar.",
+      "Don't install additional CSS libraries, component frameworks, or icon packages.",
+      "Don't add emoji, decorative icons, or illustrative elements.",
+      "Don't apply a shadow to a non-interactive surface.",
+      "Don't stack cards inside cards.",
+      "Don't use Bootstrap density — tight gutters, small form elements, crowded grids."
+    ]
+  }
+}
