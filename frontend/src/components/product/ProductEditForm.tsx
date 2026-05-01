@@ -14,6 +14,7 @@ interface ProductEditFormProps {
   onSave: () => void;
   onCancel: () => void;
   onCategoryCreated: (category: Category) => void;
+  onDelete: () => Promise<void>;
   message: string;
 }
 
@@ -24,11 +25,26 @@ function ProductEditForm({
   onSave,
   onCancel,
   onCategoryCreated,
+  onDelete,
   message,
 }: ProductEditFormProps) {
   const [showNewCategory, setShowNewCategory] = useState(false);
   const [newCategoryTitle, setNewCategoryTitle] = useState("");
   const [catError, setCatError] = useState("");
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState("");
+
+  const handleDeleteConfirm = async () => {
+    setDeleting(true);
+    try {
+      await onDelete();
+    } catch (err: unknown) {
+      setDeleteError(err instanceof Error ? err.message : "Failed to delete");
+      setDeleting(false);
+      setConfirmDelete(false);
+    }
+  };
 
   const handleCreateCategory = () => {
     if (!newCategoryTitle.trim()) {
@@ -160,6 +176,36 @@ function ProductEditForm({
       </div>
 
       {message && <p className="form-message">{message}</p>}
+
+      <div className="form-delete">
+        {!confirmDelete ? (
+          <button className="delete-link" onClick={() => setConfirmDelete(true)}>
+            Delete product
+          </button>
+        ) : (
+          <span className="delete-confirm">
+            Delete this product permanently?{" "}
+            <button
+              className="delete-confirm__yes"
+              onClick={handleDeleteConfirm}
+              disabled={deleting}
+            >
+              {deleting ? "Deleting…" : "Yes, delete"}
+            </button>
+            {" · "}
+            <button
+              className="delete-confirm__cancel"
+              onClick={() => {
+                setConfirmDelete(false);
+                setDeleteError("");
+              }}
+            >
+              Cancel
+            </button>
+          </span>
+        )}
+        {deleteError && <p className="delete-error">{deleteError}</p>}
+      </div>
     </div>
   );
 }

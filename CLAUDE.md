@@ -187,6 +187,17 @@ Phone,Android phone,<category_id>,5000,2,Samsung
 
 ---
 
+## Delete Product
+
+The edit product page (`ProductPage.tsx`) includes a delete flow:
+- A small underlined "Delete product" text link appears at the bottom of the edit form, styled with `--color-error`.
+- Clicking it shows an inline confirmation ("Delete this product permanently? Yes, delete · Cancel") — no modal, no browser dialog.
+- Confirming calls `DELETE /products/{id}` via `deleteProduct` in `api/products.ts` (which calls `apiDelete` in `api/client.ts`).
+- On success, the user is navigated back to `/products`.
+- On error, a red error message is shown below the confirm buttons and the confirm state is reset.
+
+---
+
 ## Known TODOs
 
 - Add create-product and create-category routes/pages (Add product/category buttons exist but navigate to unimplemented routes)

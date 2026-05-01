@@ -1,17 +1,18 @@
 import { useEffect, useState, type ChangeEvent } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import PageShell from "../components/layout/PageShell";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
 import ErrorMessage from "../components/ui/ErrorMessage";
 import Button from "../components/ui/Button";
 import ProductEditForm from "../components/product/ProductEditForm";
-import { getProduct, updateProduct } from "../api/products";
+import { getProduct, updateProduct, deleteProduct } from "../api/products";
 import { getCategories } from "../api/categories";
 import type { Product, Category, ProductFormData } from "../types";
 import "./ProductPage.css";
 
 function ProductPage() {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
 
   const [product, setProduct] = useState<Product | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -73,6 +74,11 @@ function ProductPage() {
       .catch((err) => setMessage(err.message));
   };
 
+  const handleDelete = async () => {
+    await deleteProduct(id!);
+    navigate("/products");
+  };
+
   const handleCategoryCreated = (newCat: Category) => {
     setCategories((prev) => [...prev, newCat]);
     if (product) setProduct({ ...product, category_id: newCat.id });
@@ -109,6 +115,7 @@ function ProductPage() {
             setMessage("");
           }}
           onCategoryCreated={handleCategoryCreated}
+          onDelete={handleDelete}
           message={message}
         />
       ) : (

@@ -46,3 +46,11 @@ export async function apiPostMultipart<T>(
   }
   return res.json();
 }
+
+export async function apiDelete(path: string): Promise<void> {
+  const res = await fetch(`${BASE_URL}${path}`, { method: "DELETE" });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(text || `DELETE ${path} failed: ${res.status}`);
+  }
+}

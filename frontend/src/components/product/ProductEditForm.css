@@ -93,3 +93,59 @@
   font-size: 14px;
   color: var(--color-text-muted);
 }
+
+.form-delete {
+  margin-top: var(--space-xl);
+  padding-top: var(--space-lg);
+  border-top: 1px solid var(--color-border);
+}
+
+.delete-link {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-error);
+  text-decoration: underline;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.delete-link:hover {
+  opacity: 0.75;
+}
+
+.delete-confirm {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.delete-confirm__yes,
+.delete-confirm__cancel {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  text-decoration: underline;
+  font-family: inherit;
+}
+
+.delete-confirm__yes {
+  color: var(--color-error);
+}
+
+.delete-confirm__yes:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.delete-confirm__cancel {
+  color: var(--color-text-muted);
+}
+
+.delete-error {
+  margin-top: var(--space-sm);
+  font-size: var(--font-size-sm);
+  color: var(--color-error);
+}
