@@ -9,6 +9,8 @@ import (
 	productHandler "github.com/shiven-lohia/interneers-lab/pkg/products/handler"
 	"github.com/shiven-lohia/interneers-lab/pkg/products/repository"
 	productService "github.com/shiven-lohia/interneers-lab/pkg/products/service"
+	reportsHandler "github.com/shiven-lohia/interneers-lab/pkg/reports/handler"
+	reportsService "github.com/shiven-lohia/interneers-lab/pkg/reports/service"
 )
 
 func main() {
@@ -37,9 +39,14 @@ func main() {
 	cHandler := productHandler.NewProductCategoryHandler(cService)
 	pHandler := productHandler.NewProductHandler(pService)
 
+	// REPORTS MODULE
+	rService := reportsService.NewReportsService(pRepo, cRepo)
+	rHandler := reportsHandler.NewReportsHandler(rService)
+
 	// routes
 	productHandler.RegisterCategoryRoutes(mux, cHandler)
 	productHandler.RegisterRoutes(mux, pHandler)
+	reportsHandler.RegisterRoutes(mux, rHandler)
 
 	// apply middleware
 	loggedMux := middleware.LoggingMiddleware(mux)

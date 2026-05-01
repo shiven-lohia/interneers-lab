@@ -203,3 +203,48 @@ The edit product page (`ProductPage.tsx`) includes a delete flow:
 ## Known TODOs
 
 - Add create-product and create-category routes/pages (Add product/category buttons exist but navigate to unimplemented routes)
+
+---
+
+## Reports
+
+On-demand analytical reports computed in-memory from existing products/categories data. No new MongoDB collection.
+
+### New API Endpoints
+
+| Method | Path | Query Params | Description |
+|--------|------|--------------|-------------|
+| GET | `/reports/category-counts` | `min_count` (int, optional), `max_count` (int, optional) | Products per category; filters out categories outside [min, max] count range |
+| GET | `/reports/price-distribution` | `buckets` (CSV of floats, optional; default `100,500,1000,5000`) | Products per price bucket, sliced by category |
+| GET | `/reports/low-stock` | `threshold` (int, optional; default `10`) | Products with qty < threshold; categories where >10% of products are low-stock |
+
+### Backend Package
+
+```
+backend/go/pkg/reports/
+  entity/report.go        # CategoryCountsReport, PriceDistributionReport, LowStockReport DTOs
+  service/reports.go      # business logic (in-memory aggregation over all products/categories)
+  service/reports_test.go # unit tests with mock repos
+  handler/reports.go      # HTTP handlers + query-param parsing
+  handler/register.go     # RegisterRoutes(mux, h)
+  handler/reports_integration_test.go
+```
+
+All three service methods call `productRepo.GetAll(ctx, "")` + `categoryRepo.GetAll(ctx)` once and aggregate in-memory. This is a known scaling limit acceptable for a learning project.
+
+### Frontend Route
+
+`/reports` — single page with three tabs: **Category Counts**, **Price Distribution**, **Low Stock**.
+
+```
+frontend/src/
+  api/reports.ts
+  pages/ReportsPage.tsx + .css
+  components/report/
+    CategoryCountsTab.tsx + .css
+    PriceDistributionTab.tsx + .css
+    LowStockTab.tsx + .css
+  utils/csv.ts   # buildCSV + downloadCSV helpers
+```
+
+New dependency: `recharts` (bar charts). CSV download is built client-side from the JSON response.

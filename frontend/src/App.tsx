@@ -4,6 +4,7 @@ import ProductPage from "./pages/ProductPage";
 import BulkImportPage from "./pages/BulkImportPage";
 import CategoryListPage from "./pages/CategoryListPage";
 import CategoryPage from "./pages/CategoryPage";
+import ReportsPage from "./pages/ReportsPage";
 import { Routes, Route, Navigate } from "react-router-dom";
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
         <Route path="/products/:id" element={<ProductPage />} />
         <Route path="/categories" element={<CategoryListPage />} />
         <Route path="/categories/:id" element={<CategoryPage />} />
+        <Route path="/reports" element={<ReportsPage />} />
       </Routes>
     </div>
   );

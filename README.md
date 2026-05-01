@@ -198,6 +198,33 @@ src/
 
 ---
 
+### Week 10 — Reporting
+
+**Three on-demand analytical reports** computed in-memory from existing products/categories data. No new MongoDB collection.
+
+**Backend — `backend/go/pkg/reports/`:**
+
+```
+entity/report.go        # CategoryCountsReport, PriceDistributionReport, LowStockReport DTOs
+service/reports.go      # in-memory aggregation over all products/categories
+service/reports_test.go # unit tests with mock repos (11 tests)
+handler/reports.go      # HTTP handlers + query-param parsing
+handler/register.go     # RegisterRoutes(mux, h)
+handler/reports_integration_test.go
+```
+
+**Frontend — `/reports` route with three tabs:**
+
+| Tab | Description |
+|-----|-------------|
+| Category Counts | Bar chart + table of products per category; min/max count filter; CSV download |
+| Price Distribution | Grouped bar chart of products per price bucket per category; custom bucket edges; CSV download |
+| Low Stock | Table of products below a quantity threshold; categories where >10% of products are low-stock; CSV download |
+
+New dependency: `recharts` (bar charts). CSV files are generated client-side from the JSON response.
+
+---
+
 ## API Reference
 
 Base URL: `http://localhost:8080`
@@ -223,6 +250,14 @@ Base URL: `http://localhost:8080`
 | `PUT`    | `/categories/{id}`    | Update category by ID                    | JSON body                                 |
 | `DELETE` | `/categories/{id}`    | Delete category by ID                    | Returns `204 No Content`                  |
 | `DELETE` | `/categories/empty`   | Delete all categories with no products   |                                           |
+
+### Reports
+
+| Method | Path | Query params | Description |
+|--------|------|-------------|-------------|
+| `GET` | `/reports/category-counts` | `min_count`, `max_count` (int, optional) | Products per category; filtered by count range |
+| `GET` | `/reports/price-distribution` | `buckets` (CSV of floats, optional; default `100,500,1000,5000`) | Products per price bucket, sliced by category |
+| `GET` | `/reports/low-stock` | `threshold` (int, optional; default `10`) | Products with qty < threshold; categories where >10% are low-stock |
 
 ### Status Codes
 
