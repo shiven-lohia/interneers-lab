@@ -77,7 +77,7 @@ func (h *ReportsHandler) LowStockHandler(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	threshold := 10
+	threshold := 80
 	if raw := r.URL.Query().Get("threshold"); raw != "" {
 		v, err := strconv.Atoi(raw)
 		if err != nil || v < 0 {

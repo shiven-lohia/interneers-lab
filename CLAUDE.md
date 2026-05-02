@@ -216,7 +216,7 @@ On-demand analytical reports computed in-memory from existing products/categorie
 |--------|------|--------------|-------------|
 | GET | `/reports/category-counts` | `min_count` (int, optional), `max_count` (int, optional) | Products per category; filters out categories outside [min, max] count range |
 | GET | `/reports/price-distribution` | `buckets` (CSV of floats, optional; default `100,500,1000,5000`) | Products per price bucket, sliced by category |
-| GET | `/reports/low-stock` | `threshold` (int, optional; default `10`) | Products with qty < threshold; categories where >10% of products are low-stock |
+| GET | `/reports/low-stock` | `threshold` (int, optional; default `80`) | Products with qty < threshold; categories where >10% of products are low-stock |
 
 ### Backend Package
 

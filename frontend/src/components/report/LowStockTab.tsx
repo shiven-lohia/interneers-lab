@@ -19,7 +19,7 @@ import "./LowStockTab.css";
 
 const SAGE = "oklch(72% 0.09 155)";
 const CLAY = "oklch(60% 0.16 25)";
-const DEFAULT_THRESHOLD = 10;
+const DEFAULT_THRESHOLD = 80;
 const STORAGE_KEY = "reports_threshold";
 
 function LowStockTab() {
