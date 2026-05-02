@@ -38,7 +38,7 @@
 /* Products section */
 .category-products__heading {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
   margin: 0 0 0;
   padding: var(--space-sm) var(--space-lg);
@@ -50,6 +50,12 @@
   background-color: var(--color-pale-sage);
   border-bottom: 2px solid var(--color-chalk);
   border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+}
+
+.category-products__heading-right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
 }
 
 .category-products__count {
@@ -72,6 +78,78 @@
   margin: 0;
   color: var(--color-ash);
   font-size: var(--font-size-base);
+}
+
+/* Table view */
+.category-products__table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.category-products__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-size-sm);
+}
+
+.category-products__th {
+  padding: var(--space-sm) var(--space-md);
+  text-align: left;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-text-muted);
+  background-color: var(--color-pale-sage);
+  border-bottom: 2px solid var(--color-chalk);
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+  transition: color 0.15s ease;
+}
+
+.category-products__th:hover {
+  color: var(--color-text);
+}
+
+.category-products__th--active {
+  color: var(--color-text);
+}
+
+.category-products__th--num {
+  text-align: right;
+}
+
+.category-products__sort-icon {
+  font-style: normal;
+  color: var(--color-primary);
+}
+
+.category-products__tr {
+  cursor: pointer;
+  transition: background-color 0.12s ease;
+}
+
+.category-products__tr:hover .category-products__td {
+  background-color: var(--color-pale-sage);
+}
+
+.category-products__td {
+  padding: var(--space-md);
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text);
+  background-color: var(--color-surface);
+  transition: background-color 0.12s ease;
+  vertical-align: middle;
+}
+
+.category-products__td--name {
+  font-weight: 500;
+}
+
+.category-products__td--num {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
 }
 
 @media (max-width: 600px) {

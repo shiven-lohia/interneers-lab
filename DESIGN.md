@@ -156,11 +156,13 @@ Cards and containers have no shadow at rest — they read as surfaces through ba
 
 ### Shadow Vocabulary
 - **Flat** (no shadow): All cards, panels, and containers at rest. Tonal contrast from Parchment on Canvas is sufficient.
-- **Hover Lift** (`0 4px 16px oklch(22% 0.008 95 / 0.10)`): Clickable cards on pointer hover. Soft, warm-tinted, directional downward shadow.
+- **Hover Lift** (`0 8px 20px oklch(22% 0.008 95 / 0.10)`): Clickable cards on pointer hover. Soft, warm-tinted, paired with `translateY(-3px)` so the card lifts toward the viewer.
 - **Elevated** (`0 8px 24px oklch(22% 0.008 95 / 0.14)`): Open dropdown menus, active popovers. Slightly stronger; same warm family.
 
 ### Named Rules
 **The Earned Elevation Rule.** Shadows are a response to state, not a badge of importance. A static, non-interactive surface has no shadow. Period.
+
+**The Lift Rule.** Card hover uses `translateY(-3px)` plus a single-layer warm shadow over a 200ms `cubic-bezier(0.16, 1, 0.3, 1)` curve. Never `transform: scale` — bilinear texture sampling during the scale softens glyphs even with `will-change` and GPU layer hints. Pure pixel translation is GPU-accelerated AND pixel-perfect; the shadow growth carries the elevation cue.
 
 ## 5. Components
 
@@ -180,8 +182,10 @@ The primary grouping unit. Flat at rest; responsive on hover.
 
 - **Corner Style:** Gently curved (8px radius)
 - **Background:** Parchment White
-- **Shadow:** None at rest; Hover Lift (`0 4px 16px oklch(22% 0.008 95 / 0.10)`) on interactive cards
+- **Shadow:** None at rest; Hover Lift (`0 8px 20px oklch(22% 0.008 95 / 0.10)`) on interactive cards
 - **Border:** 1px Warm Chalk at rest; transitions to 1px Warm Stone on hover
+- **Transform:** `translateY(-3px)` on hover — pixel-aligned lift, no `scale` (would soften text during transit)
+- **Transition:** 200ms ease-out-expo (`cubic-bezier(0.16, 1, 0.3, 1)`) on `transform`, `box-shadow`, and `border-color`
 - **Padding:** `md` (12px) interior
 
 ### Inputs / Fields
@@ -218,7 +222,7 @@ Category groupings on ProductListPage use uppercase Label typography on a Pale S
 - **Do** keep all cards flat at rest. Shadows appear on hover only — they signal responsiveness, not rank.
 - **Do** use Pale Sage tints for ambient hierarchy — category sections, empty states, raised panels — before using shadows or borders.
 - **Do** keep page layouts open: one `PageShell` at `max-width: 1200px` with consistent `lg` (20px) padding. Sections breathe before they stack.
-- **Do** use `transform` and `opacity` for all animation. Never animate layout properties.
+- **Do** use `transform` and `opacity` for animation, never layout properties. Keep `transform: scale` small (≤1.02) on text-heavy surfaces to avoid glyph softening during the transition.
 
 ### Don't:
 - **Don't** use purple, violet, indigo, or any blue-shifted hue as an accent. The purple-gradient SaaS aesthetic ("AI slop") is explicitly banned by this project.

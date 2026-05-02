@@ -11,9 +11,9 @@
 }
 
 .product-card.card--clickable:hover {
+  transform: translateY(-3px);
+  border-color: var(--color-border-hover);
   box-shadow: var(--shadow-lift);
-  border-color: var(--color-stone);
-  transform: translateY(-2px);
 }
 
 .product-card__body {

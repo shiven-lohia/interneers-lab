@@ -79,23 +79,27 @@ Context propagates from HTTP handler through service to DB for cancellation/time
 
 ```
 src/
-  App.tsx                        # router setup (React Router v6), Navbar + Routes
+  App.tsx                        # router setup (React Router v6), Navbar + Routes, ThemeProvider wrap
   index.tsx                      # root mount
   index.css                      # imports variables.css and reset.css
   styles/
-    variables.css                # OKLCH design tokens (palette + semantic)
+    variables.css                # OKLCH design tokens (palette + semantic), [data-theme="dark"] overrides
     reset.css                    # base reset
   types/
     index.ts                     # Product, Category, ProductFormData interfaces
   api/
     client.ts                    # base fetch wrapper
-    products.ts                  # product API calls
+    products.ts                  # product API calls (incl. createProduct)
     categories.ts                # category API calls
+  context/
+    ThemeContext.tsx             # light/dark theme state, persists to localStorage (toggle UI not yet wired up)
   pages/
-    ProductListPage.tsx/css      # grouped-by-category product grid
+    ProductListPage.tsx/css      # grouped-by-category products; grid OR table view
     ProductPage.tsx/css          # product detail + inline edit form
+    AddProductPage.tsx/css       # /products/new — create form (reuses ProductEditForm.css)
     CategoryListPage.tsx/css     # category list (ledger-row layout)
-    CategoryPage.tsx/css         # category detail + products grid
+    CategoryPage.tsx/css         # category detail + products in grid OR table view
+    AddCategoryPage.tsx/css      # /categories/new — title + description form
   components/
     layout/
       Navbar.tsx/css             # top nav (ink bg, sage active indicator)
@@ -108,13 +112,14 @@ src/
     ui/
       Button.tsx/css             # primary (sage) / secondary / danger variants
       Card.tsx/css               # base clickable card with hover lift
+      ViewToggle.tsx/css         # grid/list view toggle (inline SVG icons)
       ErrorMessage.tsx/css       # error banner (clay palette)
       LoadingSpinner.tsx/css     # centered spinner
   __tests__/                     # Jest unit tests
 integration-tests/               # Playwright E2E specs
 ```
 
-Routes: `/` → redirects to `/products`, `/products`, `/products/:id`, `/categories`, `/categories/:id`.
+Routes: `/` → redirects to `/products`, `/products`, `/products/new`, `/products/:id`, `/products/bulk`, `/categories`, `/categories/new`, `/categories/:id`, `/reports`. Note: `/products/new` and `/categories/new` must be registered **before** the `/:id` routes or React Router will swallow them.
 
 The frontend fetches directly from the Go backend at `http://localhost:8080`.
 
@@ -129,11 +134,13 @@ The frontend uses a custom OKLCH-based design system defined in `src/styles/vari
 **Semantic tokens:** `--color-primary` (sage), `--color-surface` (parchment), `--color-border` (chalk), `--color-text` (ink), `--color-text-muted` (ash), `--color-error` (clay)
 
 **Key design rules:**
-- Cards are flat at rest; hover lift via `--shadow-lift` only on interactive cards
+- Cards are flat at rest; hover uses `transform: translateY(-3px)` + `--shadow-lift` (no `transform: scale` — bilinear texture sampling softens text during transit, see DESIGN.md "Lift Rule")
 - `--color-primary` is sage (green), not dark. Navbar background uses `--color-ink` directly
 - Category section headers use pale sage background + uppercase tracked label (13px, 600, 0.04em)
 - No `border-left` accent stripes, no gradient text, no glassmorphism
 - See `DESIGN.md` for full system documentation
+
+**Dark mode (infrastructure only, no toggle UI yet):** `variables.css` has a `[data-theme="dark"]` block, `context/ThemeContext.tsx` reads/writes `localStorage("theme")` and applies `data-theme` to `<html>`. The toggle button was deliberately removed pending more polish on the dark palette — to add it back, drop a button in Navbar that calls `useTheme().toggleTheme()`.
 
 ---
 
@@ -200,9 +207,26 @@ The edit product page (`ProductPage.tsx`) includes a delete flow:
 
 ---
 
-## Known TODOs
+## View Toggle (Product List / Category Page)
 
-- Add create-product and create-category routes/pages (Add product/category buttons exist but navigate to unimplemented routes)
+Both `ProductListPage` and `CategoryPage` render products in either **grid** (cards) or **list** (table) mode. The toggle is a `ViewToggle` component (`components/ui/ViewToggle.tsx`) with two inline-SVG icon buttons. State persists across pages via `localStorage("productViewMode")`.
+
+- **Grid mode:** Products grouped by category in card sections (existing behavior).
+- **List mode:** Same category sections, each rendered as a sortable `<table>` with columns Name / Brand / Price / Stock (CategoryPage skips the implicit Brand column position is identical). Click a column header to sort; click again to toggle direction.
+- **Numeric columns** (Price, Stock) are right-aligned via the `--num` modifier on both `<th>` and `<td>`.
+- **Sort scroll preservation:** `handleSort` snapshots `window.scrollY` into a `useRef`; a `useLayoutEffect` on the `sort` state restores the position synchronously after the DOM reorder. Without this, the browser's scroll-anchoring algorithm jumps the page on header click.
+- **Header click does not focus-scroll:** `onMouseDown={(e) => e.preventDefault()}` on each `<th>` blocks the browser from focusing the cell on click, which would otherwise cause a small scroll-into-view jump.
+
+---
+
+## Create Product / Create Category
+
+Routes `/products/new` and `/categories/new` (`AddProductPage`, `AddCategoryPage`).
+
+- `AddProductPage` reuses `ProductEditForm.css` for form styling consistency. Includes inline "+ New Category" creation flow (same pattern as `ProductEditForm`).
+- `AddCategoryPage` is a minimal title + description form.
+- Both call the corresponding API (`createProduct`, `createCategory`) and `navigate()` back to the list page on success.
+- `createProduct` lives in `api/products.ts` and posts to `POST /products`.
 
 ---
 

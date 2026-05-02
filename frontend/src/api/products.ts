@@ -1,7 +1,9 @@
-import { apiGet, apiPut, apiPostMultipart, apiDelete } from "./client";
+import { apiGet, apiPost, apiPut, apiPostMultipart, apiDelete } from "./client";
 import type { Product, ProductFormData, BulkImportResult } from "../types";
 
 export const getProducts = () => apiGet<Product[]>("/products");
+export const createProduct = (data: ProductFormData) =>
+  apiPost<Product>("/products", data);
 export const getProduct = (id: string) => apiGet<Product>(`/products/${id}`);
 export const getProductsByCategory = (categoryId: string) =>
   apiGet<Product[]>(`/products?category_id=${categoryId}`);
