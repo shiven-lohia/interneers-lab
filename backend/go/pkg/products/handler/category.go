@@ -21,6 +21,7 @@ func NewProductCategoryHandler(service *service.ProductCategoryService) *Product
 
 func RegisterCategoryRoutes(mux *http.ServeMux, h *ProductCategoryHandler) {
 	mux.HandleFunc("/categories", h.CategoriesHandler)
+	mux.HandleFunc("/categories/empty", h.DeleteEmptyCategoryHandler)
 	mux.HandleFunc("/categories/", h.CategoriesHandler)
 }
 
@@ -127,6 +128,16 @@ func (h *ProductCategoryHandler) DeleteCategoryHandler(w http.ResponseWriter, r 
 	id := strings.TrimPrefix(r.URL.Path, "/categories/")
 
 	err := h.service.DeleteCategory(r.Context(), id)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+}
+
+func (h *ProductCategoryHandler) DeleteEmptyCategoryHandler(w http.ResponseWriter, r *http.Request) {
+	err := h.service.DeleteCategory(r.Context(), "")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return

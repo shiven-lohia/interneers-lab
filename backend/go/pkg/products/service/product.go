@@ -26,33 +26,51 @@ func NewProductService(
 
 // var ProductStore = map[string]entity.Product{} (deprecated, using repository instead)
 
-func (s *ProductService) BulkCreateProducts(ctx context.Context, products []entity.Product) ([]entity.Product, error) {
+const bulkWorkers = 10
 
+type BulkCreateError struct {
+	Index  int    `json:"index"`
+	Reason string `json:"reason"`
+}
+
+type BulkCreateResult struct {
+	Created []entity.Product  `json:"created"`
+	Errors  []BulkCreateError `json:"errors"`
+}
+
+func (s *ProductService) BulkCreateProducts(ctx context.Context, products []entity.Product) (BulkCreateResult, error) {
+	sem := make(chan struct{}, bulkWorkers)
 	var wg sync.WaitGroup
 	var mu sync.Mutex
 
-	var createdProducts []entity.Product
+	result := BulkCreateResult{
+		Created: []entity.Product{},
+		Errors:  []BulkCreateError{},
+	}
 
-	for _, p := range products {
+	for i, p := range products {
 		wg.Add(1)
+		sem <- struct{}{}
 
-		go func(prod entity.Product) {
+		go func(idx int, prod entity.Product) {
 			defer wg.Done()
-			
-			createdProduct, err := s.CreateProduct(ctx, prod)
-			if(err!=nil) {
-				return
-			}
+			defer func() { <-sem }()
+
+			created, err := s.CreateProduct(ctx, prod)
 
 			mu.Lock()
-			createdProducts = append(createdProducts, createdProduct)
-			mu.Unlock()
-		} (p)
+			defer mu.Unlock()
+
+			if err != nil {
+				result.Errors = append(result.Errors, BulkCreateError{Index: idx, Reason: err.Error()})
+			} else {
+				result.Created = append(result.Created, created)
+			}
+		}(i, p)
 	}
 
 	wg.Wait()
-
-	return createdProducts, nil
+	return result, nil
 }
 
 func (s *ProductService) CreateProduct(ctx context.Context, p entity.Product) (entity.Product, error) {
@@ -84,11 +102,37 @@ func (s *ProductService) CreateProduct(ctx context.Context, p entity.Product) (e
 }
 
 func (s *ProductService) GetAllProducts(ctx context.Context, categoryID string) ([]entity.Product, error) {
-	return s.repo.GetAll(ctx, categoryID)
+	products, err := s.repo.GetAll(ctx, categoryID)
+	if err != nil {
+		return nil, err
+	}
+
+	for i, p := range products {
+		if p.CategoryID != "" {
+			category, err := s.categoryRepo.GetByID(ctx, p.CategoryID)
+			if err == nil {
+				products[i].Category = &category
+			}
+		}
+	}
+
+	return products, nil
 }
 
 func (s *ProductService) GetProductById(ctx context.Context, id string) (entity.Product, error) {
-	return s.repo.GetByID(ctx, id)
+	product, err := s.repo.GetByID(ctx, id)
+	if err != nil {
+		return entity.Product{}, err
+	}
+
+	if product.CategoryID != "" {
+		category, err := s.categoryRepo.GetByID(ctx, product.CategoryID)
+		if err == nil {
+			product.Category = &category
+		}
+	}
+
+	return product, nil
 }
 
 func (s *ProductService) UpdateProduct(ctx context.Context, id string, p entity.Product) (entity.Product, error) {

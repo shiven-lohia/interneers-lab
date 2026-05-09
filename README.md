@@ -1,277 +1,363 @@
-# Interneers Lab Inventory API
+# Interneers Lab — Inventory Management
 
-This document covers the current inventory system API implemented in `backend/go`.
+A full-stack inventory management SPA built as a weekly learning project. Go REST API backend with MongoDB persistence, React + TypeScript frontend.
 
-## Scope
+---
 
-The inventory system is the `products` module in the Go backend. It exposes a small CRUD API over HTTP and is currently wired into the application entrypoint at `backend/go/cmd/app/main.go`.
+## Quick Start
 
-Current implementation notes:
-
-- The API is served by Go's standard `net/http` package.
-- Product routes are mounted under `/products`.
-- Data is stored in an in-memory map, not in MongoDB.
-- The process currently listens on port `8080` in code.
-
-## Inventory Domain Model
-
-Each inventory item is represented as a product with the following JSON shape:
-
-```json
-{
-  "id": "sku-1001",
-  "name": "Wireless Mouse",
-  "description": "Ergonomic mouse with USB receiver",
-  "category": "Accessories",
-  "price": 24.99,
-  "brand": "LogiTech",
-  "quantity": 12
-}
-```
-
-### Fields
-
-| Field | Type | Required | Notes |
-| --- | --- | --- | --- |
-| `id` | `string` | Yes in practice | Must be supplied by the client. The API does not generate IDs. |
-| `name` | `string` | Yes | Must not be empty. |
-| `description` | `string` | No | Free-form text. |
-| `category` | `string` | No | Free-form text. |
-| `price` | `number` | Yes | Must be greater than `0`. |
-| `brand` | `string` | No | Free-form text. |
-| `quantity` | `number` | Yes | Must be `0` or greater. |
-
-## Validation Rules
-
-The controller currently enforces these business rules on create and update:
-
-- `name` is required.
-- `price` must be greater than `0`.
-- `quantity` cannot be negative.
-
-Validation failures return plain-text error messages with `400 Bad Request` for create requests and either `400 Bad Request` or `404 Not Found` depending on the handler path.
-
-## Base URL
-
-Use this base URL when running the Go server locally:
-
-```text
-http://localhost:8080
-```
-
-## Endpoints
-
-### 1. List all inventory items
-
-**Request**
-
-```http
-GET /products
-```
-
-**Success response**
-
-- Status: `200 OK`
-- Body: JSON array of products
-
-**Example**
+### Backend (Go)
 
 ```bash
-curl http://localhost:8080/products
+cd backend/go
+make setup          # go mod tidy + copy .env.sample → .env.local
+make build-and-run  # compile → bin/app, start server on :8080
 ```
 
-### 2. Get one inventory item by ID
-
-**Request**
-
-```http
-GET /products/{id}
-```
-
-**Success response**
-
-- Status: `200 OK`
-- Body: JSON product object
-
-**Not found**
-
-- Status: `404 Not Found`
-- Body: `Product not found`
-
-**Example**
-
-```bash
-curl http://localhost:8080/products/sku-1001
-```
-
-### 3. Create an inventory item
-
-**Request**
-
-```http
-POST /products
-Content-Type: application/json
-```
-
-**Example body**
-
-```json
-{
-  "id": "sku-1001",
-  "name": "Wireless Mouse",
-  "description": "Ergonomic mouse with USB receiver",
-  "category": "Accessories",
-  "price": 24.99,
-  "brand": "LogiTech",
-  "quantity": 12
-}
-```
-
-**Success response**
-
-- Status: `201 Created`
-- Body: created product as JSON
-
-**Example**
-
-```bash
-curl -X POST http://localhost:8080/products \
-  -H "Content-Type: application/json" \
-  -d '{
-    "id": "sku-1001",
-    "name": "Wireless Mouse",
-    "description": "Ergonomic mouse with USB receiver",
-    "category": "Accessories",
-    "price": 24.99,
-    "brand": "LogiTech",
-    "quantity": 12
-  }'
-```
-
-### 4. Update an inventory item
-
-**Request**
-
-```http
-PUT /products/{id}
-Content-Type: application/json
-```
-
-**Example body**
-
-```json
-{
-  "name": "Wireless Mouse Pro",
-  "description": "Updated ergonomic mouse",
-  "category": "Accessories",
-  "price": 29.99,
-  "brand": "LogiTech",
-  "quantity": 8
-}
-```
-
-**Success response**
-
-- Status: `200 OK`
-- Body: updated product as JSON
-
-**Example**
-
-```bash
-curl -X PUT http://localhost:8080/products/sku-1001 \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "Wireless Mouse Pro",
-    "description": "Updated ergonomic mouse",
-    "category": "Accessories",
-    "price": 29.99,
-    "brand": "LogiTech",
-    "quantity": 8
-  }'
-```
-
-### 5. Delete an inventory item
-
-**Request**
-
-```http
-DELETE /products/{id}
-```
-
-**Success response**
-
-- Status: `204 No Content`
-
-**Not found**
-
-- Status: `404 Not Found`
-- Body: `product not found`
-
-**Example**
-
-```bash
-curl -X DELETE http://localhost:8080/products/sku-1001
-```
-
-## How To Run The Inventory API
-
-From `backend/go`:
-
-```bash
-make setup
-make build-and-run
-```
-
-If you want MongoDB available locally as well:
+MongoDB is required for persistence. To spin up a local instance:
 
 ```bash
 docker compose up -d --env-file .env.local
 ```
 
-## Important Implementation Caveats
+### Frontend (React + TypeScript)
 
-These behaviors are important if you are integrating with the current API:
+```bash
+cd frontend
+yarn install
+yarn start          # dev server on :3000
+```
 
-- Products are stored only in memory via `MapProductRepository`. Restarting the server clears all inventory data.
-- MongoDB is configured in the project but the inventory API does not currently persist product data to MongoDB.
-- `POST /products` does not enforce unique IDs. Creating a product with an existing `id` silently overwrites the previous map entry.
-- Creating a product with an empty `id` is currently possible because there is no explicit ID validation.
-- `GET /products` returns items in map iteration order, so response ordering is not stable.
-- Error responses are plain text, not structured JSON.
-- The sample environment file and Docker config reference `APP_PORT=8000`, but the Go server code currently listens on `8080`.
+The frontend expects the Go backend running at `http://localhost:8080`.
 
-## Relevant Source Locations
+---
 
-- `backend/go/cmd/app/main.go`: application entrypoint and route registration
-- `backend/go/pkg/products/handler`: HTTP handlers and route dispatch
-- `backend/go/pkg/products/controller`: validation and business logic
-- `backend/go/pkg/products/repository`: in-memory repository implementation
-- `backend/go/pkg/products/entity/product.go`: product schema
+## Week-by-Week Progress
 
-## Week 3 Progress (MongoDB Integration)
+### Week 1 — Project Setup
 
-Week 3 focused on moving the inventory service from in-memory storage toward MongoDB-backed persistence while preserving the existing API flow.
+- Initialised Go module (`go.mod`), committed to Git
+- Adopted hexagonal architecture: `pkg/<module>/entity`, `handler`, `repository` layout
+- Built HTTP server using `net/http`, listening on `:8080`
+- Added structured logging with [zerolog](https://github.com/rs/zerolog)
+- Wired application in `cmd/app/main.go` with explicit dependency injection
+- Tested endpoints using Postman and `curl`
 
-- Added MongoDB integration using the official Go driver (`go.mongodb.org/mongo-driver`).
-- Introduced `MongoProductRepository` so the repository layer can work with MongoDB collections.
-- Added connection health checks with `mongo.Connect` and `client.Ping`.
-- Introduced context propagation (`handler -> controller -> repository`) for DB calls.
-- Added timeout guards in repository operations using `context.WithTimeout`.
-- Improved CRUD reliability with proper Mongo result checks (`MatchedCount`, `DeletedCount`) and corresponding API responses.
-- Validated endpoints through Postman and curl, and verified stored data in MongoDB Compass.
+---
 
-## Week 4 Progress
+### Week 2 — In-Memory CRUD APIs
 
-- Added ProductCategory domain model, repository layer (`MongoCategoryRepository`), and service layer (`ProductCategoryService`).
-- Implemented full Category CRUD APIs under `/categories` endpoint matching Product handler patterns.
-- Established Product ↔ Category relationship using `category_id` field in Product entity.
-- Added validation in ProductService to ensure products reference only valid categories via `GetByID` check.
-- Implemented category filtering for products using `GET /products?category_id=...` query parameter.
-- Refactored Product entity to remove redundant `category` field; use only `category_id` for database consistency.
-- Enforced `brand` as a required field in ProductService CreateProduct validation.
-- Implemented lazy schema evolution: existing products without brand remain valid on reads, but new/updated products require brand field.
+**Product model** introduced (`pkg/products/entity/product.go`):
 
-### TODOs
+| Field         | Type     | Required | Notes                    |
+|---------------|----------|----------|--------------------------|
+| `id`          | `string` | Yes      | Supplied by client       |
+| `name`        | `string` | Yes      | Must not be empty        |
+| `description` | `string` | No       | Free-form text           |
+| `category`    | `string` | No       | Free-form text           |
+| `price`       | `float64`| Yes      | Must be > 0              |
+| `brand`       | `string` | No       | Free-form text           |
+| `quantity`    | `int`    | Yes      | Must be ≥ 0              |
 
-- Move ID generation to backend (use UUID or Mongo ObjectID instead of client-provided IDs).
-- Implement batching + controlled concurrency (WaitGroups with batching/worker pool) for bulk product creation.
+**Implemented:**
+- In-memory map storage (`MapProductRepository`)
+- Full CRUD: `POST /products`, `GET /products`, `GET /products/{id}`, `PUT /products/{id}`, `DELETE /products/{id}`
+- Validation: `name` required, `price > 0`, `quantity ≥ 0`
+- Request logging middleware
+- Correct HTTP status codes: `200`, `201`, `204`, `400`, `404`, `405`
+
+---
+
+### Week 3 — Layered Architecture + MongoDB
+
+**Refactored into three explicit layers:**
+
+```
+Handler  →  Service  →  Repository  →  MongoDB
+(HTTP)      (business)  (interface)
+```
+
+- Repository layer uses Go interfaces — in-memory and MongoDB implementations are interchangeable
+- `context.Context` propagated from HTTP handler through service to DB driver for cancellation
+- Per-operation 5-second timeout via `context.WithTimeout`
+- MongoDB integration using official Go driver (`go.mongodb.org/mongo-driver`)
+- Added `MongoProductRepository` — data now persists across server restarts
+- Added CORS middleware (allow-all origins, standard methods/headers)
+- Connection health-checked on startup via `client.Ping`
+
+---
+
+### Week 4 — Categories & Relations
+
+**New model** — `ProductCategory` (`pkg/products/entity/category.go`):
+
+| Field         | Type     | Required | Notes             |
+|---------------|----------|----------|-------------------|
+| `id`          | `string` | Yes      | Generated backend |
+| `title`       | `string` | Yes      | Must not be empty |
+| `description` | `string` | No       | Free-form text    |
+
+**Implemented:**
+- `MongoCategoryRepository` + `ProductCategoryService`
+- Full Category CRUD under `/categories`
+- `Product.CategoryID` field links products to categories; `category` object embedded on fetch
+- Filter: `GET /products?category_id=<id>`
+- `brand` added as required field in product validation
+- Special endpoint: `DELETE /categories/empty` — remove categories with no products
+- Lazy schema evolution: existing products without `brand` remain valid on reads
+
+---
+
+### Week 5 — Testing, Workflow & Bulk Create
+
+**Tests:**
+- Unit tests — `pkg/products/service/product_test.go`: ProductService and ProductCategoryService tested with mocked repositories
+- Integration tests — `pkg/products/handler/product_integration_test.go`: end-to-end handler tests against a real MongoDB instance
+
+**Workflow:**
+- Adopted feature-branch development; all changes merged via PRs, no direct commits to `main`
+
+**Bulk product creation — `POST /products/bulk`:**
+- Accepts `multipart/form-data` with a CSV file in the `file` field
+- CSV format: `name,description,category_id,price,quantity,brand` (header required, no ID column; `description` and `category_id` may be empty)
+- Up to 10 rows processed concurrently via worker-pool semaphore
+- Returns `207 Multi-Status` with `created[]` and `errors[]` arrays
+- Malformed rows (< 6 columns, non-numeric price/quantity) silently skipped; business-rule failures reported in `errors[]`
+
+```bash
+curl -X POST http://localhost:8080/products/bulk \
+  -F "file=@products.csv"
+```
+
+---
+
+### Week 6 — Basic Frontend (Vanilla JS)
+
+Location: `frontend/basic/`
+
+- Plain HTML page (`index.html`) with a product-list container
+- `script.js` fetches `GET /products` and generates product tile HTML dynamically
+- `styles.css` with staggered `fadeInUp` CSS animation on tiles
+- Used browser DevTools (DOM inspector, console, network tab) for debugging
+
+---
+
+### Week 7 — React + TypeScript Basics
+
+- Set up React 19 + TypeScript 5.7 project (Create React App, Yarn)
+- Created `<ProductCard />` component for product summary display
+- Created basic `<ProductList />` to render multiple cards
+- Added `<Navbar />` header component
+- Wired React Router v7 with an initial `/products` route
+- Progressed from dummy data to real `fetch()` calls against the backend
+- Added product detail view with basic edit functionality
+
+---
+
+### Week 8 — Full Frontend Integration
+
+**Core:**
+- Typed API layer (`src/api/client.ts`, `products.ts`, `categories.ts`) with generic fetch wrapper
+- `ProductPage` (`/products/:id`) — view product details and edit inline
+- `ProductListPage` (`/products`) — products grouped by category with add-product button
+- React Router routes: `/` → redirects to `/products`, `/products`, `/products/:id`
+- Loading states (skeleton/spinner) and error states on all data-fetching pages
+
+**Advanced (category pages):**
+- `CategoryListPage` (`/categories`) — list all categories
+- `CategoryPage` (`/categories/:id`) — category details + grid of products in that category
+- Navigation: product card links to its parent category; navbar links both sections
+- `LoadingSpinner` and `ErrorMessage` components reused across pages
+
+---
+
+### Week 9 — Clean Architecture & Design System
+
+**Frontend restructure:**
+
+```
+src/
+  api/          # typed fetch wrappers (products, categories, client)
+  types/        # Product, Category, ProductFormData interfaces
+  components/
+    layout/     # Navbar, PageShell
+    product/    # ProductCard, ProductEditForm
+    category/   # CategoryCard
+    ui/         # Button, Card, ErrorMessage, LoadingSpinner
+  pages/        # ProductListPage, ProductPage, CategoryListPage, CategoryPage
+  styles/       # variables.css (design tokens), reset.css
+```
+
+**OKLCH design system** (`src/styles/variables.css`):
+- Full token set: palette, semantic, spacing, radius, typography, shadows — no hard-coded hex/rgb values anywhere
+- See [DESIGN.md](./DESIGN.md) for full system documentation
+
+**Backend fix — ID generation:**
+- `MongoProductRepository.Create` now generates a MongoDB ObjectID hex string (`primitive.NewObjectID().Hex()`) when no ID is supplied, matching the existing behaviour in `MongoCategoryRepository`
+- Clients must **not** include an `id` field on create requests — the backend always generates one
+
+---
+
+### Week 10 — Reporting
+
+**Three on-demand analytical reports** computed in-memory from existing products/categories data. No new MongoDB collection.
+
+**Backend — `backend/go/pkg/reports/`:**
+
+```
+entity/report.go        # CategoryCountsReport, PriceDistributionReport, LowStockReport DTOs
+service/reports.go      # in-memory aggregation over all products/categories
+service/reports_test.go # unit tests with mock repos (11 tests)
+handler/reports.go      # HTTP handlers + query-param parsing
+handler/register.go     # RegisterRoutes(mux, h)
+handler/reports_integration_test.go
+```
+
+**Frontend — `/reports` route with three tabs:**
+
+| Tab | Description |
+|-----|-------------|
+| Category Counts | Bar chart + table of products per category; min/max count filter; CSV download |
+| Price Distribution | Grouped bar chart of products per price bucket per category; custom bucket edges; CSV download |
+| Low Stock | Table of products below a quantity threshold; categories where >10% of products are low-stock; CSV download |
+
+New dependency: `recharts` (bar charts). CSV files are generated client-side from the JSON response.
+
+---
+
+## API Reference
+
+Base URL: `http://localhost:8080`
+
+### Products
+
+| Method   | Path                  | Description                              | Body / Notes                              |
+|----------|-----------------------|------------------------------------------|-------------------------------------------|
+| `GET`    | `/products`           | List all products                        | Optional `?category_id=<id>` filter       |
+| `POST`   | `/products`           | Create a product                         | JSON body; do **not** include `id`        |
+| `GET`    | `/products/{id}`      | Get product by ID                        |                                           |
+| `PUT`    | `/products/{id}`      | Update product by ID                     | JSON body                                 |
+| `DELETE` | `/products/{id}`      | Delete product by ID                     | Returns `204 No Content`                  |
+| `POST`   | `/products/bulk`      | Bulk-create from CSV                     | `multipart/form-data`, field `file`; returns `207` |
+
+### Categories
+
+| Method   | Path                  | Description                              | Body / Notes                              |
+|----------|-----------------------|------------------------------------------|-------------------------------------------|
+| `GET`    | `/categories`         | List all categories                      |                                           |
+| `POST`   | `/categories`         | Create a category                        | JSON body; do **not** include `id`        |
+| `GET`    | `/categories/{id}`    | Get category by ID                       |                                           |
+| `PUT`    | `/categories/{id}`    | Update category by ID                    | JSON body                                 |
+| `DELETE` | `/categories/{id}`    | Delete category by ID                    | Returns `204 No Content`                  |
+| `DELETE` | `/categories/empty`   | Delete all categories with no products   |                                           |
+
+### Reports
+
+| Method | Path | Query params | Description |
+|--------|------|-------------|-------------|
+| `GET` | `/reports/category-counts` | `min_count`, `max_count` (int, optional) | Products per category; filtered by count range |
+| `GET` | `/reports/price-distribution` | `buckets` (CSV of floats, optional; default `100,500,1000,5000`) | Products per price bucket, sliced by category |
+| `GET` | `/reports/low-stock` | `threshold` (int, optional; default `10`) | Products with qty < threshold; categories where >10% are low-stock |
+
+### Status Codes
+
+| Code  | Meaning                         |
+|-------|---------------------------------|
+| `200` | OK                              |
+| `201` | Created                         |
+| `204` | No Content (DELETE success)     |
+| `207` | Multi-Status (bulk operations)  |
+| `400` | Bad Request (validation failed) |
+| `404` | Not Found                       |
+| `405` | Method Not Allowed              |
+
+---
+
+## Data Models
+
+### Product
+
+```json
+{
+  "id":          "68ab12cd...",
+  "name":        "Wireless Mouse",
+  "description": "Ergonomic mouse with USB receiver",
+  "category_id": "68ab12ef...",
+  "category":    { "id": "...", "title": "Accessories", "description": "" },
+  "price":       24.99,
+  "brand":       "Logitech",
+  "quantity":    12
+}
+```
+
+**Validation:** `name` required · `price > 0` · `quantity ≥ 0` · `brand` required
+
+### ProductCategory
+
+```json
+{
+  "id":          "68ab12ef...",
+  "title":       "Accessories",
+  "description": "Peripherals and accessories"
+}
+```
+
+**Validation:** `title` required
+
+### Bulk Create CSV
+
+```
+name,description,category_id,price,quantity,brand
+Milk,Fresh whole milk,<category-id>,50,10,Amul
+Phone,,<category-id>,5000,2,Samsung
+Headphones,,,1200,15,Sony
+```
+
+`description` and `category_id` are optional — leave them blank but keep the commas.
+
+### Bulk Create Response (207)
+
+```json
+{
+  "created": [
+    { "id": "68ab12...", "name": "Milk", "price": 50, "quantity": 10, "brand": "Amul" }
+  ],
+  "errors": [
+    { "index": 1, "reason": "Brand is required" }
+  ]
+}
+```
+
+`index` is the 0-based position in the submitted product list (after malformed-row filtering).
+
+---
+
+## Design System
+
+The frontend uses a custom OKLCH-based token system defined in `src/styles/variables.css`. All color, spacing, radius, typography, and shadow values are CSS custom properties. See [DESIGN.md](./DESIGN.md) for full documentation.
+
+### Palette tokens
+
+| Token                | Description                   |
+|----------------------|-------------------------------|
+| `--color-sage`       | Primary green                 |
+| `--color-sage-deep`  | Darker sage (hover states)    |
+| `--color-pale-sage`  | Light sage (section headers)  |
+| `--color-parchment`  | Surface background            |
+| `--color-canvas`     | Page background               |
+| `--color-chalk`      | Borders                       |
+| `--color-stone`      | Subtle accents                |
+| `--color-ink`        | Primary text / Navbar bg      |
+| `--color-ash`        | Muted text                    |
+| `--color-clay`       | Error states                  |
+
+### Semantic tokens
+
+| Token                 | Maps to            |
+|-----------------------|--------------------|
+| `--color-primary`     | `--color-sage`     |
+| `--color-surface`     | `--color-parchment`|
+| `--color-border`      | `--color-chalk`    |
+| `--color-text`        | `--color-ink`      |
+| `--color-text-muted`  | `--color-ash`      |
+| `--color-error`       | `--color-clay`     |

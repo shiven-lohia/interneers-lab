@@ -8,6 +8,7 @@ import (
 	"github.com/shiven-lohia/interneers-lab/pkg/products/entity"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type MongoCategoryRepository struct {
@@ -39,11 +40,21 @@ func (r *MongoCategoryRepository) GetByID(ctx context.Context, id string) (entit
 	return category, nil
 }
 
-func (r *MongoCategoryRepository) Create(ctx context.Context, category entity.ProductCategory) (entity.ProductCategory, error) {
+func (r *MongoCategoryRepository) Create(
+	ctx context.Context,
+	category entity.ProductCategory,
+) (entity.ProductCategory, error) {
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 
-	count, err := r.collection.CountDocuments(ctx, bson.M{"_id": category.ID})
+	if category.ID == "" {
+		category.ID = primitive.NewObjectID().Hex()
+	}
+
+	count, err := r.collection.CountDocuments(
+		ctx,
+		bson.M{"_id": category.ID},
+	)
 	if err != nil {
 		return category, err
 	}
@@ -57,7 +68,6 @@ func (r *MongoCategoryRepository) Create(ctx context.Context, category entity.Pr
 		if mongo.IsDuplicateKeyError(err) {
 			return category, errors.New("category with this id already exists")
 		}
-
 		return category, err
 	}
 

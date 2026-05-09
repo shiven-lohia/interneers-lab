@@ -83,3 +83,64 @@ if err := client.Ping(ctx, nil); err != nil {
   - behavior-driven HTTP error mapping
 
 The backend is now significantly closer to a production-ready service than the initial in-memory implementation.
+
+---
+
+## Categories and Bulk Creation Fix
+
+### ID Generation
+
+Previously, products required the caller to supply an `id` field — the backend had no fallback. This meant:
+- A `POST /products` body missing `id` would insert a document with an empty-string ID, and a second such request would collide.
+- The bulk CSV import required an ID column that callers had to populate with unique values themselves.
+
+**Fix:** `MongoProductRepository.Create` now generates a MongoDB ObjectID hex string (`primitive.NewObjectID().Hex()`) when `product.ID` is empty, matching the existing behavior in `MongoCategoryRepository.Create`. The service and handler are unchanged — ID generation stays in the repository layer where infrastructure concerns belong.
+
+Categories already generated IDs on the backend and required no changes.
+
+### Bulk Create Products — `POST /products/bulk`
+
+**Endpoint:** `POST /products/bulk`  
+**Content-Type:** `multipart/form-data`  
+**Field:** `file` — a CSV file
+
+**CSV format** (header row required):
+
+```
+name,price,quantity,brand
+Milk,50,10,Amul
+Phone,5000,2,Samsung
+Headphones,1200,15,Sony
+```
+
+- No ID column — the backend generates all IDs.
+- Rows with fewer than 4 columns or unparseable price/quantity are silently skipped before processing.
+- Up to **10 rows are processed concurrently** via a worker-pool semaphore, preventing unbounded goroutine creation on large files.
+- Errors per row are collected and returned rather than dropped silently.
+
+**Response: 207 Multi-Status**
+
+```json
+{
+  "created": [
+    { "id": "68...", "name": "Milk", "price": 50, "quantity": 10, "brand": "Amul", ... }
+  ],
+  "errors": [
+    { "index": 1, "reason": "Brand is required" }
+  ]
+}
+```
+
+- `created` — products that were successfully inserted.
+- `errors` — per-item failures; `index` is the 0-based position in the submitted list (after filtering malformed rows). The response is always 207 so callers can always inspect both fields.
+
+**Problems fixed vs. the previous implementation:**
+
+| Problem | Before | After |
+|---------|--------|-------|
+| Goroutine count | One per row, unbounded | Capped at 10 via semaphore |
+| Per-row errors | Silently dropped | Returned in `errors` array |
+| Overall error return | Always `nil` | System errors surfaced; item errors in body |
+| Response status | 201 Created | 207 Multi-Status |
+| ID responsibility | Caller must supply | Backend generates |
+| CSV ID column | Required (`row[0]`) | Removed |

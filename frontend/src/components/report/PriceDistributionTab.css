@@ -1,0 +1,16 @@
+.report-tab__filter-input--wide {
+  width: 240px;
+}
+
+.report-tab__filter-hint {
+  margin: calc(-1 * var(--space-lg)) 0 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.report-tab__code {
+  font-family: monospace;
+  background: var(--color-canvas);
+  padding: 1px 4px;
+  border-radius: var(--radius-sm);
+}

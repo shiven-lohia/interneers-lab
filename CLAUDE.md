@@ -1,0 +1,274 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Project Overview
+
+This is a full-stack inventory management SPA built as a learning/portfolio project ("interneers-lab"). It has:
+- A **Go REST API** backend (`backend/go/`) — the primary active backend
+- A **React + TypeScript** frontend (`frontend/`)
+- A legacy **Python/Django** backend (`backend/python/`) — not actively developed
+
+---
+
+## Commands
+
+### Backend (Go)
+
+All commands run from `backend/go/`.
+
+```bash
+make setup          # go mod tidy + copy .env.sample → .env.local
+make build-and-run  # compile to bin/app and start server on :8080
+make run            # run previously compiled binary
+
+# Tests
+go test ./...                                            # all tests
+go test ./pkg/products/service -run TestCreateProduct -v # single unit test
+go test ./pkg/products/handler -run TestIntegration_CreateAndGetProduct -v  # single integration test
+```
+
+Integration tests (handler layer) require a running MongoDB instance. Set connection string in `.env.local`.
+
+### Frontend
+
+All commands run from `frontend/`.
+
+> **After every frontend change:** run `yarn eslint --max-warnings=0 src` (or check the ESLint output) to catch Prettier formatting errors before committing.
+
+```bash
+yarn install              # install dependencies
+yarn start                # dev server on :3000
+yarn build                # production build
+
+# Unit tests (Jest)
+yarn test                                        # watch mode
+yarn test src/__tests__/App.test.tsx             # single file
+yarn test -- --coverage                          # with coverage
+
+# E2E tests (Playwright)
+yarn playwright install                          # one-time browser install
+yarn playwright test                             # run all E2E tests
+yarn playwright test integration-tests/example.spec.ts  # single spec
+yarn playwright test -- --headed                 # headed mode
+yarn playwright show-report                      # open last report
+```
+
+---
+
+## Architecture
+
+### Backend (Go) — Clean Architecture
+
+```
+cmd/app/main.go          # entry point: wires dependencies, starts HTTP server
+pkg/
+  products/
+    entity/              # domain models: Product, ProductCategory
+    repository/          # MongoDB data access; also has in-memory impl
+    service/             # business logic; depends on repository interfaces
+    handler/             # HTTP handlers, route registration
+  middleware/            # CORS, request logging
+```
+
+Dependency flow: `main.go` → constructs repository → injects into service → injects into handler. The repository layer uses interfaces, so unit tests swap in in-memory implementations.
+
+Context propagates from HTTP handler through service to DB for cancellation/timeout.
+
+### Frontend (React + TypeScript)
+
+```
+src/
+  App.tsx                        # router setup (React Router v6), Navbar + Routes, ThemeProvider wrap
+  index.tsx                      # root mount
+  index.css                      # imports variables.css and reset.css
+  styles/
+    variables.css                # OKLCH design tokens (palette + semantic), [data-theme="dark"] overrides
+    reset.css                    # base reset
+  types/
+    index.ts                     # Product, Category, ProductFormData interfaces
+  api/
+    client.ts                    # base fetch wrapper
+    products.ts                  # product API calls (incl. createProduct)
+    categories.ts                # category API calls
+  context/
+    ThemeContext.tsx             # light/dark theme state, persists to localStorage (toggle UI not yet wired up)
+  pages/
+    ProductListPage.tsx/css      # grouped-by-category products; grid OR table view
+    ProductPage.tsx/css          # product detail + inline edit form
+    AddProductPage.tsx/css       # /products/new — create form (reuses ProductEditForm.css)
+    CategoryListPage.tsx/css     # category list (ledger-row layout)
+    CategoryPage.tsx/css         # category detail + products in grid OR table view
+    AddCategoryPage.tsx/css      # /categories/new — title + description form
+  components/
+    layout/
+      Navbar.tsx/css             # top nav (ink bg, sage active indicator)
+      PageShell.tsx/css          # max-width content wrapper
+    product/
+      ProductCard.tsx/css        # card: name/brand + price/stock footer
+      ProductEditForm.tsx/css    # inline edit form with category creation
+    category/
+      CategoryCard.tsx/css       # list-row: title left, description right
+    ui/
+      Button.tsx/css             # primary (sage) / secondary / danger variants
+      Card.tsx/css               # base clickable card with hover lift
+      ViewToggle.tsx/css         # grid/list view toggle (inline SVG icons)
+      ErrorMessage.tsx/css       # error banner (clay palette)
+      LoadingSpinner.tsx/css     # centered spinner
+  __tests__/                     # Jest unit tests
+integration-tests/               # Playwright E2E specs
+```
+
+Routes: `/` → redirects to `/products`, `/products`, `/products/new`, `/products/:id`, `/products/bulk`, `/categories`, `/categories/new`, `/categories/:id`, `/reports`. Note: `/products/new` and `/categories/new` must be registered **before** the `/:id` routes or React Router will swallow them.
+
+The frontend fetches directly from the Go backend at `http://localhost:8080`.
+
+---
+
+## Design System
+
+The frontend uses a custom OKLCH-based design system defined in `src/styles/variables.css`. All colors, spacing, radius, typography sizes, and shadows are CSS custom properties. Do not use hard-coded hex/rgb values — use tokens.
+
+**Palette tokens:** `--color-sage`, `--color-sage-deep`, `--color-pale-sage`, `--color-parchment`, `--color-canvas`, `--color-chalk`, `--color-stone`, `--color-ink`, `--color-ash`, `--color-clay`
+
+**Semantic tokens:** `--color-primary` (sage), `--color-surface` (parchment), `--color-border` (chalk), `--color-text` (ink), `--color-text-muted` (ash), `--color-error` (clay)
+
+**Key design rules:**
+- Cards are flat at rest; hover uses `transform: translateY(-3px)` + `--shadow-lift` (no `transform: scale` — bilinear texture sampling softens text during transit, see DESIGN.md "Lift Rule")
+- `--color-primary` is sage (green), not dark. Navbar background uses `--color-ink` directly
+- Category section headers use pale sage background + uppercase tracked label (13px, 600, 0.04em)
+- No `border-left` accent stripes, no gradient text, no glassmorphism
+- See `DESIGN.md` for full system documentation
+
+**Dark mode (infrastructure only, no toggle UI yet):** `variables.css` has a `[data-theme="dark"]` block, `context/ThemeContext.tsx` reads/writes `localStorage("theme")` and applies `data-theme` to `<html>`. The toggle button was deliberately removed pending more polish on the dark palette — to add it back, drop a button in Navbar that calls `useTheme().toggleTheme()`.
+
+---
+
+## API Endpoints
+
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | `/products` | List products (supports `?category=` filter) |
+| POST | `/products` | Create product |
+| GET | `/products/{id}` | Get product |
+| PUT | `/products/{id}` | Update product |
+| DELETE | `/products/{id}` | Delete product |
+| GET | `/categories` | List categories |
+| POST | `/categories` | Create category |
+| GET | `/categories/{id}` | Get category |
+| PUT | `/categories/{id}` | Update category |
+| DELETE | `/categories/{id}` | Delete category |
+| POST | `/products/bulk` | Bulk-create products from CSV (multipart/form-data, field `file`) |
+
+---
+
+## ID Generation
+
+Both products and categories have their IDs generated by the backend using `primitive.NewObjectID().Hex()` (MongoDB ObjectID as hex string). Clients must **not** supply an `id` field on create — the backend ignores any client-provided ID for products and always generates a fresh one in `MongoProductRepository.Create`. Categories behave the same via `MongoCategoryRepository.Create`.
+
+## Bulk Create Products
+
+`POST /products/bulk` accepts a `multipart/form-data` request with a single field named `file` containing a CSV.
+
+**CSV format** (header row required, 6 columns):
+
+```
+name,description,category_id,price,quantity,brand
+Milk,Fresh milk,,50,10,Amul
+Phone,Android phone,<category_id>,5000,2,Samsung
+```
+
+- IDs are generated by the backend; do not include an ID column.
+- `description` and `category_id` may be empty strings.
+- If `category_id` is provided it must match an existing category; otherwise the row is rejected.
+- Rows with fewer than 6 columns or non-numeric price/quantity are silently skipped.
+- Up to 10 rows are processed concurrently (worker pool).
+- Response is always **207 Multi-Status** with a JSON body:
+
+```json
+{
+  "created": [ /* successfully inserted Product objects */ ],
+  "errors":  [ { "index": 1, "reason": "Brand is required" } ]
+}
+```
+
+`index` is the 0-based position of the row in the submitted product list (after header and malformed-row filtering).
+
+---
+
+## Delete Product
+
+The edit product page (`ProductPage.tsx`) includes a delete flow:
+- A small underlined "Delete product" text link appears at the bottom of the edit form, styled with `--color-error`.
+- Clicking it shows an inline confirmation ("Delete this product permanently? Yes, delete · Cancel") — no modal, no browser dialog.
+- Confirming calls `DELETE /products/{id}` via `deleteProduct` in `api/products.ts` (which calls `apiDelete` in `api/client.ts`).
+- On success, the user is navigated back to `/products`.
+- On error, a red error message is shown below the confirm buttons and the confirm state is reset.
+
+---
+
+## View Toggle (Product List / Category Page)
+
+Both `ProductListPage` and `CategoryPage` render products in either **grid** (cards) or **list** (table) mode. The toggle is a `ViewToggle` component (`components/ui/ViewToggle.tsx`) with two inline-SVG icon buttons. State persists across pages via `localStorage("productViewMode")`.
+
+- **Grid mode:** Products grouped by category in card sections (existing behavior).
+- **List mode:** Same category sections, each rendered as a sortable `<table>` with columns Name / Brand / Price / Stock (CategoryPage skips the implicit Brand column position is identical). Click a column header to sort; click again to toggle direction.
+- **Numeric columns** (Price, Stock) are right-aligned via the `--num` modifier on both `<th>` and `<td>`.
+- **Sort scroll preservation:** `handleSort` snapshots `window.scrollY` into a `useRef`; a `useLayoutEffect` on the `sort` state restores the position synchronously after the DOM reorder. Without this, the browser's scroll-anchoring algorithm jumps the page on header click.
+- **Header click does not focus-scroll:** `onMouseDown={(e) => e.preventDefault()}` on each `<th>` blocks the browser from focusing the cell on click, which would otherwise cause a small scroll-into-view jump.
+
+---
+
+## Create Product / Create Category
+
+Routes `/products/new` and `/categories/new` (`AddProductPage`, `AddCategoryPage`).
+
+- `AddProductPage` reuses `ProductEditForm.css` for form styling consistency. Includes inline "+ New Category" creation flow (same pattern as `ProductEditForm`).
+- `AddCategoryPage` is a minimal title + description form.
+- Both call the corresponding API (`createProduct`, `createCategory`) and `navigate()` back to the list page on success.
+- `createProduct` lives in `api/products.ts` and posts to `POST /products`.
+
+---
+
+## Reports
+
+On-demand analytical reports computed in-memory from existing products/categories data. No new MongoDB collection.
+
+### New API Endpoints
+
+| Method | Path | Query Params | Description |
+|--------|------|--------------|-------------|
+| GET | `/reports/category-counts` | `min_count` (int, optional), `max_count` (int, optional) | Products per category; filters out categories outside [min, max] count range |
+| GET | `/reports/price-distribution` | `buckets` (CSV of floats, optional; default `100,500,1000,5000`) | Products per price bucket, sliced by category |
+| GET | `/reports/low-stock` | `threshold` (int, optional; default `80`) | Products with qty < threshold; categories where >10% of products are low-stock |
+
+### Backend Package
+
+```
+backend/go/pkg/reports/
+  entity/report.go        # CategoryCountsReport, PriceDistributionReport, LowStockReport DTOs
+  service/reports.go      # business logic (in-memory aggregation over all products/categories)
+  service/reports_test.go # unit tests with mock repos
+  handler/reports.go      # HTTP handlers + query-param parsing
+  handler/register.go     # RegisterRoutes(mux, h)
+  handler/reports_integration_test.go
+```
+
+All three service methods call `productRepo.GetAll(ctx, "")` + `categoryRepo.GetAll(ctx)` once and aggregate in-memory. This is a known scaling limit acceptable for a learning project.
+
+### Frontend Route
+
+`/reports` — single page with three tabs: **Category Counts**, **Price Distribution**, **Low Stock**.
+
+```
+frontend/src/
+  api/reports.ts
+  pages/ReportsPage.tsx + .css
+  components/report/
+    CategoryCountsTab.tsx + .css
+    PriceDistributionTab.tsx + .css
+    LowStockTab.tsx + .css
+  utils/csv.ts   # buildCSV + downloadCSV helpers
+```
+
+New dependency: `recharts` (bar charts). CSV download is built client-side from the JSON response.

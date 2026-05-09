@@ -1,9 +1,15 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
-import App from "../App";
+import { MemoryRouter } from "react-router-dom";
+import Navbar from "../components/layout/Navbar";
 
-test("renders learn react link", () => {
-  render(<App />);
-  const linkElement = screen.getByText(/learn react/i);
-  expect(linkElement).toBeInTheDocument();
+test("renders navigation links", () => {
+  render(
+    <MemoryRouter>
+      <Navbar />
+    </MemoryRouter>,
+  );
+  expect(screen.getByText("My Store")).toBeInTheDocument();
+  expect(screen.getByText("Products")).toBeInTheDocument();
+  expect(screen.getByText("Categories")).toBeInTheDocument();
 });
